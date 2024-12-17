@@ -1,0 +1,68 @@
+﻿@model Project_64132989.Models.Data.Profile
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="row">
+    <div class="col-md-2">
+        <img src="@(string.IsNullOrEmpty(Model.avatar_path) ? "/Assets/anh.jpg" : Model.avatar_path)" style="width: 7rem; height: 7rem; border-radius: 50%; object-fit: cover;"/>
+
+    </div>
+    <div class="col-md-10">
+        <h3>@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
+        <h6>@Html.DisplayFor(model => model.User.email)</h6>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mt-4">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Thông tin sinh viên</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="#">Thay đổi thông tin sinh viên</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="#">Đặt lại mật khẩu</a>
+    </li>
+</ul>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.date_of_birth)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.date_of_birth)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.gender)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.gender)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.phone_number)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.phone_number)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.address)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.address)
+        </dd>
+
+        
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.user_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

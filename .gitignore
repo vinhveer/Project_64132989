@@ -1,0 +1,84 @@
+# Visual Studio
+**/.vs/
+**/obj/
+**/bin/
+**/*.suo
+**/*.user
+**/*.userosscache
+**/*.sln.docstates
+**/*.dll
+**/*.exe
+**/*.pdb
+**/*.appx
+**/*.appxsym
+**/*.ipch
+**/*.iobj
+**/*.idb
+**/*.ipdb
+**/*.pgc
+**/*.pgd
+
+# Mac/Windows file caches
+**/.DS_Store
+**/Thumbs.db
+**/ehthumbs.db
+
+# NuGet
+**/*.nupkg
+**/*.snupkg
+**/.nuget/
+
+# npm
+**/node_modules/
+**/*.log
+
+# Visual Studio Code
+**/.vscode/
+
+# Azure, IIS
+**/publish/
+**/wwwroot/
+
+# Logs
+**/*.log
+**/*.tlog
+**/*.out
+**/*.err
+
+# SQL Server
+**/*.mdf
+**/*.ldf
+
+# ReSharper, Rider
+**/_ReSharper*
+**/*.DotSettings.user
+**/.idea/
+
+# Byebug
+**/.byebug_history
+
+# Coverage reports
+**/*.coverage
+**/*.coveragexml
+
+# Test Results
+**/TestResults/
+**/*.trx
+
+# Bundled files
+**/*.min.css
+**/*.min.js
+**/*.bundle
+
+# Windows Installer
+**/*.cab
+**/*.msi
+**/*.msm
+**/*.msp
+
+# Git extensions
+**/*.gitignore.local
+**/*.gitignore.worktree
+
+# Packages (if committed)
+/packages/

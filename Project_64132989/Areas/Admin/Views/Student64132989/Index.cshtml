@@ -1,0 +1,231 @@
+﻿@{
+    ViewBag.Title = "Danh sách sinh viên";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="@Url.Action("Index", "Student64132989")">
+        <i class="bi bi-list-task me-2"></i>
+        <span>Danh sách sinh viên</span></a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="@Url.Action("UploadStudentList", "Student64132989")">
+        <i class="bi bi-file-earmark-excel me-2"></i> 
+        <span>Thêm sinh viên mới từ file</span></a>
+    </li>
+</ul>
+
+<h4>Danh sách sinh viên</h4>
+
+<div id="toolbar">
+    <a href="@Url.Action("Create", "Student64132989")" class="btn custom-btn me-2">
+        <i class="bi bi-person-plus-fill"></i> Thêm sinh viên mới
+    </a>
+    <button id="deleteSelectedBtn" class="btn custom-btn text-danger">
+        <i class="bi bi-trash"></i> Xoá các mục đã chọn
+    </button>
+</div>
+<table id="studentsTable" data-toolbar="#toolbar" data-search="true" data-show-refresh="true"
+       data-show-toggle="true" data-show-fullscreen="true" data-show-columns="true" data-show-export="true"
+       data-detail-view="false" data-click-to-select="true" data-pagination="true" data-side-pagination="server"
+       data-url="@Url.Action("GetStudentList", "Student64132989")" data-method="post" data-sort-name="userId"
+       data-sort-order="asc" data-page-list="[10, 25, 50, 100]">
+    <thead>
+        <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="userId" data-sortable="true">Mã số sinh viên</th>
+            <th data-field="fullName" data-sortable="true">Họ và tên</th>
+            <th data-field="email" data-sortable="true">Email</th>
+            <th data-field="phoneNumber">Số điện thoại</th>
+            <th data-field="dateOfBirth" data-formatter="dateFormatter">Ngày sinh</th>
+            <th data-field="gender">Giới tính</th>
+            <th data-field="actions" data-formatter="actionFormatter" data-class="p-0" data-align="center"></th>
+        </tr>
+    </thead>
+</table>
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table-locale-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var $table = $('#studentsTable');
+
+        function dateFormatter(value) {
+            if (!value) return '';
+            return moment(value).format('DD/MM/YYYY');
+        }
+
+        function actionFormatter(value, row) {
+            return [
+                '<div class="dropdown p-2">',
+                '<button class="btn custom-btn btn-sm" type="button" onclick="toggleActionMenu(this, \'' + row.userId + '\')">',
+                '<i class="bi bi-three-dots-vertical"></i>',
+                '</button>',
+                '</div>'
+            ].join('');
+        }
+
+        function debounce(func, delay) {
+            let timer;
+            return function (...args) {
+                const context = this;
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        function toggleActionMenu(button, userId) {
+            const existingDropdown = document.querySelector('.custom-action-dropdown');
+
+            if (existingDropdown) {
+                if (existingDropdown.dataset.userId === userId) {
+                    existingDropdown.classList.add('fade-out');
+                    setTimeout(() => existingDropdown.remove(), 200); // Chờ hiệu ứng đóng
+                    return;
+                }
+                existingDropdown.remove();
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu custom-action-dropdown show fade-in';
+            dropdown.dataset.userId = userId;
+            dropdown.style.position = 'absolute';
+            dropdown.style.zIndex = '1100';
+            dropdown.innerHTML = `
+                <a class="dropdown-item" href="@Url.Action("Details", "Student64132989")/${userId}">
+                    <i class="bi bi-eye me-2"></i>Chi tiết
+                </a>
+                <a class="dropdown-item" href="@Url.Action("Edit", "Student64132989")/${userId}">
+                    <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+                </a>
+                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteStudent('${userId}')">
+                    <i class="bi bi-trash me-2"></i>Xóa
+                </a>
+            `;
+
+            document.body.appendChild(dropdown);
+
+            Popper.createPopper(button, dropdown, {
+                placement: 'bottom-end',
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, 8],
+                        },
+                    },
+                ],
+            });
+
+            // Đóng dropdown khi click bên ngoài
+            const closeDropdown = (e) => {
+                if (!dropdown.contains(e.target) && e.target !== button) {
+                    dropdown.classList.add('fade-out');
+                    setTimeout(() => dropdown.remove(), 200); // Chờ hiệu ứng đóng
+                    document.removeEventListener('click', closeDropdown);
+                }
+            };
+
+            setTimeout(() => {
+                document.addEventListener('click', closeDropdown);
+            }, 0);
+        }
+
+        // Sử dụng debounce
+        const debouncedToggleActionMenu = debounce(toggleActionMenu, 300);
+
+
+
+        function deleteStudent(userId) {
+            Swal.fire({
+                title: 'Xác nhận xóa',
+                text: 'Bạn có chắc chắn muốn xóa sinh viên này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete", "Student64132989")',
+                        type: 'POST',
+                        data: { userId: userId },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Đã xóa!', 'Sinh viên đã được xóa thành công.', 'success');
+                                $table.bootstrapTable('refresh');
+                            } else {
+                                Swal.fire('Lỗi!', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Lỗi!', 'Có lỗi xảy ra trong quá trình xóa.', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function initTable() {
+            $table.bootstrapTable('destroy').bootstrapTable({
+                locale: "vi-VN"
+            });
+        }
+
+        $(function () {
+            initTable();
+
+            $('#locale').change(initTable);
+        });
+
+        $('#deleteSelectedBtn').click(function () {
+            var selectedIds = $.map($table.bootstrapTable('getSelections'), function (row) {
+                return row.userId;
+            });
+            if (selectedIds.length === 0) {
+                Swal.fire('Thông báo', 'Vui lòng chọn ít nhất một mục để xóa.', 'info');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Xác nhận xóa',
+                text: 'Bạn có chắc chắn muốn xóa các mục đã chọn?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("DeleteMultiple", "Student64132989")',
+                        type: 'POST',
+                        data: { userIds: selectedIds },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Đã xóa!', 'Các mục đã chọn đã được xóa thành công.', 'success');
+                                $table.bootstrapTable('refresh');
+                            } else {
+                                Swal.fire('Lỗi!', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Lỗi!', 'Có lỗi xảy ra trong quá trình xóa.', 'error');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

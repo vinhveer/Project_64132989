@@ -1,0 +1,170 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 0.875rem !important;
+}
+
+.custom-btn {
+    font-size: 0.875rem;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+/* Light mode (default) */
+[data-bs-theme="light"] .custom-btn {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+
+/* Dark mode */
+[data-bs-theme="dark"] .custom-btn {
+    box-shadow: rgba(255, 255, 255, 0.1) 0px 2px 5px -1px, rgba(0, 0, 0, 0.7) 0px 1px 3px -1px;
+    background-color: #343a40; /* Nền tối cho nút */
+    color: #f8f9fa; /* Chữ sáng */
+}
+
+    /* Hover trạng thái dark mode */
+    [data-bs-theme="dark"] .custom-btn:hover {
+        box-shadow: rgba(255, 255, 255, 0.2) 0px 4px 10px -2px, rgba(0, 0, 0, 0.9) 0px 2px 5px -1px;
+    }
+
+.dropdown-menu {
+    font-size: 0.875rem;
+}
+
+.nav-link {
+    color: inherit !important; /* Kế thừa màu mặc định từ bố cục */
+    opacity: 0.8;
+    text-decoration: none; /* Loại bỏ gạch chân nếu cần */
+}
+
+.nav-link.active {
+    opacity: 1;
+}
+
+.text-decoration-none {
+    color: inherit !important;
+    font-weight: 500;
+}
+/* Sidebar base styles */
+.sidebar {
+    overflow-y: auto;
+}
+
+.user-avatar {
+    width: 3em;
+    height: 3em;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+body {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Navbar specific theming */
+.navbar {
+    transition: background-color 0.3s;
+}
+
+.custom-row {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.sidebar {
+    flex: 0 0 auto; /* Sidebar không chiếm thêm không gian nếu không cần */
+    width: clamp(200px, 25%, 300px); /* Tự động co giãn giữa 200px và 300px */
+    background-color: #f8f9fa;
+    border-right: 1px solid #ddd;
+}
+
+main {
+    flex: 1; /* Phần main chiếm hết không gian còn lại */
+    padding: 1rem;
+}
+
+/* Sidebar heading */
+.sidebar-heading {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #495057;
+    padding: 0.5rem 1rem;
+}
+
+/* Sidebar navigation links */
+.sidebar .nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    color: #0056b3;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #2470dc;
+    background-color: rgba(36, 112, 220, 0.1);
+}
+
+/* Main content */
+main {
+    flex-grow: 1;
+    padding-top: 20px;
+    height: 100vh;
+    margin-left: 310px;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem 0;
+        height: 100vh;
+    }
+
+        .sidebar .offcanvas-lg {
+            position: relative;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+    .offcanvas-md {
+        display: block !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {  
+        height: 0px !important;
+        width: 0px !important;
+    }
+
+    main {
+        padding-top: 0;
+        margin-left: 0px;
+    }
+}
+
+.nav-link.active {
+    font-weight: 500;
+}
+
+.bd-mode-toggle {
+    z-index: 1060; /* Đặt z-index cao để hiển thị trên mọi thành phần khác */
+}
+
+.bd-mode-toggle .dropdown-menu {
+    z-index: 1070; /* Đặt giá trị lớn hơn để đảm bảo menu không bị che */
+}
+
+
+
+

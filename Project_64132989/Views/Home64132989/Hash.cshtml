@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Hash";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="display-6 mb-4">Hash Generator</h2>
+
+    <!-- Form -->
+    @using (Html.BeginForm("Hash", "Authentication64132989", FormMethod.Post))
+    {
+        <div class="form-group mb-3">
+            @Html.TextBox("input", null, new { @class = "form-control", placeholder = "Nhập ký tự cần hash", required = "required" })
+        </div>
+
+        <button type="submit" class="btn btn-primary">Tạo mã hash</button>
+    }
+
+    <!-- Hash Result -->
+    @if (ViewBag.HashResult != null)
+    {
+        <div class="alert alert-secondary mt-4 position-relative" role="alert">
+            <strong>Hashed Output:</strong>
+            <p id="hashResult" class="mt-2 text-break">@ViewBag.HashResult</p>
+            <button class="btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2"
+                    onclick="copyToClipboard()">
+                Copy
+            </button>
+        </div>
+    }
+</div>
+
+
+<!-- JavaScript -->
+<script>
+    function copyToClipboard() {
+        // Lấy phần tử chứa hash result
+        const hashResult = document.getElementById("hashResult");
+        // Tạo một textarea tạm để copy
+        const tempInput = document.createElement("textarea");
+        tempInput.value = hashResult.textContent;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+
+        // Hiển thị thông báo
+        alert("Hash copied to clipboard!");
+    }
+</script>

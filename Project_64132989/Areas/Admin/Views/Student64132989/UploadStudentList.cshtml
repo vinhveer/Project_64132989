@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "Thêm sinh viên từ file";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link" href="@Url.Action("Index", "Student64132989")">
+            <i class="bi bi-list-task me-3"></i>Danh sách sinh viên
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="@Url.Action("UploadStudentList", "Student64132989")">
+            <i class="bi bi-file-earmark-excel me-2"></i>Thêm sinh viên từ file
+        </a>
+    </li>
+</ul>
+
+<h3 class="mb-3">Thêm sinh viên từ file</h3>
+
+<p class="mb-3"><b>Bước 1: </b>Tải xuống danh sách sinh viên và thêm dữ liệu</p>
+
+<a href="@Url.Action("DownloadTemplate", "Student64132989")" class="btn btn-primary">
+    <i class="bi bi-download me-2"></i>Tải xuống mẫu excel
+</a>
+
+
+<p class="mt-3"><b>Bước 2: </b>Tải lên file và chọn "Tải lên" để thêm vào hệ thống</p>
+
+@using (Html.BeginForm("UploadStudentList", "Student64132989", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="mb-3">
+        @Html.Label("fileInput", "Chọn file Excel (.xls, .xlsx)", new { @class = "form-label" })
+        @Html.TextBox("file", null, new { @class = "form-control", type = "file", required = "required", id = "fileInput" })
+    </div>
+    <button type="submit" class="btn btn-success">
+        <i class="bi bi-upload me-2"></i>Tải lên
+    </button>
+}
+
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger mt-4">
+        @ViewBag.ErrorMessage
+    </div>
+}
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-success mt-4">
+        @ViewBag.Message
+    </div>
+}

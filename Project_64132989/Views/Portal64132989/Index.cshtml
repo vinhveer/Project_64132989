@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Cổng chứng thực";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h3 class="mb-4">Cổng chứng thực hệ thống</h3>
+
+    <!-- Thanh điều hướng -->
+    <ul class="nav nav-tabs">
+        <!-- Hướng dẫn sử dụng -->
+        <li class="nav-item">
+            <a class="nav-link active" href="@Url.Action("Index", "Portal64132989")">
+                <i class="bi bi-question-circle me-2"></i> Hướng dẫn sử dụng
+            </a>
+        </li>
+        <!-- Đổi mật khẩu -->
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("ChangePassword", "Portal64132989")">
+                <i class="bi bi-key me-2"></i> Đổi mật khẩu
+            </a>
+        </li>
+        <!-- Đặt lại mật khẩu -->
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("ForgotPassword", "Portal64132989")">
+                <i class="bi bi-shield-lock me-2"></i> Đặt lại mật khẩu
+            </a>
+        </li>
+    </ul>
+
+    <div class="mt-4">
+        <p>Chào mừng bạn đến với cổng chứng thực của NTU-UTMS. Hãy chọn một trong các chức năng trên để tiếp tục.</p>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@model Project_64132989.Models.Views.LoginViewModel
+
+@{
+    ViewBag.Title = "Đăng nhập hệ thống";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="row w-100">
+        <div class="col-lg-6 col-md-8 col-sm-10 mx-auto">
+            <div class="card shadow border-0">
+                <div class="card-body p-4">
+                    <!-- Logo (Optional) -->
+                    <div class="text-center mb-4">
+                        <img src="@Url.Content("~/Assets/ntu.svg")" alt="Logo" class="img-fluid rounded-circle m-5 mt-3 mb-3" style="height: 8em" />
+                        <h4 class="fw-semibold">Chào mừng bạn 🎉</h4>
+                        <p class="text-muted">Đăng nhập hệ thống để tiếp tục</p>
+                    </div>
+
+                    <!-- Error Message -->
+                    @if (!string.IsNullOrEmpty(ViewBag.LoginResult as string))
+                    {
+                        <div class="alert alert-danger d-flex align-items-center" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                            <p class="mb-0">@ViewBag.LoginResult</p>
+                        </div>
+                    }
+
+                    <!-- Form -->
+                    @using (Html.BeginForm("Index", "Login64132989", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <!-- Email Field -->
+                        <div class="form-floating mb-3">
+                            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", type = "email", placeholder = "Email address", required = "required", id = "email" })
+                            <label for="email">Email hoặc ký danh</label>
+                            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-floating mb-3">
+                            @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = "Password", required = "required", id = "password" })
+                            <label for="password">Mật khẩu</label>
+                            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                        </div>
+
+                        <!-- Remember Me -->
+                        <div class="form-check mb-3">
+                            @Html.CheckBoxFor(model => model.RememberMe, new { @class = "form-check-input", id = "rememberMe" })
+                            <label class="form-check-label" for="rememberMe">Ghi nhớ phiên đăng nhập</label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary p-3 fw-semibold">Đăng nhập</button>
+                        </div>
+                    }
+
+                    <!-- Additional Links -->
+                    <div class="text-center">
+                        <a href="@Url.Action("ForgotPassword", "Portal64132989")" class="text-decoration-none">Bạn quên mật khẩu?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
