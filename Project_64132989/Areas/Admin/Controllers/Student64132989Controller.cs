@@ -1,5 +1,6 @@
 ﻿using OfficeOpenXml; // Sử dụng EPPlus 4.x hoặc ClosedXML
 using Project_64132989.Models.Data;
+using Project_64132989.Areas.Admin.Data;
 using System;
 using System.Data.Entity;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Net.Mail;
 
 namespace Project_64132989.Areas.Admin.Controllers
 {
@@ -18,6 +20,68 @@ namespace Project_64132989.Areas.Admin.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        // GET: User/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: User/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(AddNewUserModel addNewUserModel, HttpPostedFileBase avatarFile)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Tạo User
+                    User user = new User
+                    {
+                        user_id = addNewUserModel.user_id,
+                        email = addNewUserModel.email,
+                        password_hash = BCrypt.Net.BCrypt.HashPassword(addNewUserModel.password),
+                        user_type = 1,
+                        created_at = DateTime.Now
+                    };
+
+                    // Tạo Profile
+                    Profile profile = new Profile
+                    {
+                        user_id = addNewUserModel.user_id,
+                        first_name = addNewUserModel.first_name,
+                        last_name = addNewUserModel.last_name,
+                        date_of_birth = addNewUserModel.date_of_birth,
+                        gender = addNewUserModel.gender,
+                        phone_number = addNewUserModel.phone_number,
+                        address = addNewUserModel.address
+                    };
+
+                    // Xử lý upload file avatar
+                    if (avatarFile != null && avatarFile.ContentLength > 0)
+                    {
+                        var fileName = Path.GetFileName(avatarFile.FileName);
+                        var path = Path.Combine(Server.MapPath("~/Uploads/Avatars"), fileName);
+                        avatarFile.SaveAs(path);
+                        profile.avatar_path = "/Uploads/Avatars/" + fileName; // Lưu đường dẫn ảnh vào DB
+                    }
+
+                    // Lưu vào DB
+                    _context.Users.Add(user);
+                    _context.Profiles.Add(profile);
+                    _context.SaveChanges();
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Error: " + ex.Message);
+                }
+            }
+
+            return View(addNewUserModel);
         }
 
         [HttpPost]
@@ -132,7 +196,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                 }
 
                 // Lưu file tạm thời
-                var filePath = Server.MapPath("~/App_Data/Uploads/" + Guid.NewGuid() + fileExt);
+                var filePath = Server.MapPath("~/Uploads/Excel" + Guid.NewGuid() + fileExt);
                 file.SaveAs(filePath);
 
                 using (var package = new ExcelPackage(new FileInfo(filePath)))
@@ -258,6 +322,168 @@ namespace Project_64132989.Areas.Admin.Controllers
             }
             return View(profile);
         }
+
+        // GET: Admin/Profiles/Edit/5
+        public ActionResult Edit(string id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Profile profile = _context.Profiles.Find(id);
+            if (profile == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.user_id = new SelectList(_context.Users, "user_id", "email", profile.user_id);
+            return View(profile);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit([Bind(Include = "user_id,first_name,last_name,date_of_birth,gender,phone_number,address,avatar_path")] Profile profile)
+        {
+            if (ModelState.IsValid)
+            {
+                if (Request.Files.Count > 0)
+                {
+                    var avatar_file = Request.Files[0];
+
+                    if (avatar_file != null && avatar_file.ContentLength > 0)
+                    {
+                        // Tạo đường dẫn lưu trữ
+                        string uploadPath = Server.MapPath("~/Uploads/Avatar/");
+
+                        // Kiểm tra và tạo thư mục nếu chưa tồn tại
+                        if (!Directory.Exists(uploadPath))
+                        {
+                            Directory.CreateDirectory(uploadPath);
+                        }
+
+                        // Tạo tên file mới với GUID
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(avatar_file.FileName);
+
+                        // Lưu file
+                        string filePath = Path.Combine(uploadPath, fileName);
+                        avatar_file.SaveAs(filePath);
+
+                        // Gán đường dẫn vào Profile
+                        profile.avatar_path = "/Uploads/Avatar/" + fileName;
+                    }
+                }
+
+                _context.Entry(profile).State = EntityState.Modified;
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.user_id = new SelectList(_context.Users, "user_id", "email", profile.user_id);
+            return View(profile);
+        }
+
+        public ActionResult ChangePassword(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var user = _context.Users.Find(id);
+            if (user == null)
+            {
+                return HttpNotFound();
+            }
+
+            // Tạo ViewModel tổng hợp
+            var viewModel = new ProfileChangePasswordViewModel
+            {
+                UserId = user.user_id,
+                FirstName = user.Profile?.first_name,
+                LastName = user.Profile?.last_name,
+                Email = user.email,
+                AvatarPath = user.Profile?.avatar_path
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ChangePassword(ProfileChangePasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _context.Users.Find(model.UserId);
+                if (user == null)
+                {
+                    return HttpNotFound();
+                }
+
+                try
+                {
+                    // Lưu mật khẩu mới và gửi trực tiếp cho người dùng
+                    string plainPassword = model.NewPassword; // Lấy mật khẩu dạng rõ
+                    user.password_hash = BCrypt.Net.BCrypt.HashPassword(plainPassword);
+                    _context.SaveChanges();
+
+                    // Gửi email kèm mật khẩu mới
+                    string loginLink = Url.Action("Login", "Account", null, Request.Url.Scheme);
+                    SendChangePasswordEmail(user.email, plainPassword, loginLink);
+
+                    TempData["SuccessMessage"] = "Mật khẩu đã được thay đổi và gửi đến email của người dùng.";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Đã có lỗi xảy ra: {ex.Message}");
+                }
+            }
+
+            return View(model);
+        }
+
+        // Gửi email kèm mật khẩu mới
+        private void SendChangePasswordEmail(string email, string newPassword, string loginLink)
+        {
+            try
+            {
+                using (var client = new SmtpClient())
+                {
+                    client.Host = "smtp.gmail.com";
+                    client.Port = 587;
+                    client.EnableSsl = true;
+                    client.Credentials = new NetworkCredential(
+                        "vinhveer123@gmail.com",
+                        "hles xwcu zukc oveu" // Mật khẩu ứng dụng Gmail
+                    );
+
+                    var mailMessage = new MailMessage
+                    {
+                        From = new MailAddress("vinhveer123@gmail.com"),
+                        Subject = "Mật khẩu mới của bạn",
+                        Body = $@"
+                            <p>Xin chào,</p>
+                            <p>Quản trị viên vừa thay đổi mật khẩu của bạn trong hệ thống NTU_UTMS.</p>
+                            <p><b>Mật khẩu mới của bạn là:</b> <span style='color:blue;'>{newPassword}</span></p>
+                            <p>Bạn có thể đăng nhập bằng mật khẩu mới bằng cách nhấn vào liên kết dưới đây:</p>
+                            <a href='{loginLink}'>Đăng nhập ngay</a>
+                            <p>Nếu bạn không yêu cầu thay đổi này, vui lòng liên hệ với quản trị viên ngay lập tức.</p>
+                            <p>Trân trọng,</p>
+                            <p>NTU_UTMS</p>
+                        ",
+                        IsBodyHtml = true
+                    };
+                    mailMessage.To.Add(email);
+
+                    client.Send(mailMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Có lỗi khi gửi email: {ex.Message}");
+            }
+        }
+
 
         protected override void Dispose(bool disposing)
         {

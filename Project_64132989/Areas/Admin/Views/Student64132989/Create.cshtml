@@ -1,0 +1,109 @@
+﻿@model Project_64132989.Areas.Admin.Data.AddNewUserModel
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<p>
+    <a href="@Url.Action("Index")" class="btn custom-btn">
+        <i class="bi bi-arrow-left fs-6"></i>
+    </a>
+</p>
+
+
+<h3 class="mb-4 mt-4">Thêm sinh viên mới</h3>
+
+@using (Html.BeginForm("Create", "Student64132989", FormMethod.Post, new { enctype = "multipart/form-data", @class = "row g-3 needs-validation", novalidate = "novalidate" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- User ID -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.user_id, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.user_id, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.user_id, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Email -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.email, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.email, new { @class = "form-control", type = "email", required = "required" })
+        @Html.ValidationMessageFor(m => m.email, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Password -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.password, new { @class = "form-label" })
+        @Html.PasswordFor(m => m.password, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.password, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- First Name -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.first_name, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.first_name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.first_name, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Last Name -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.last_name, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.last_name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.last_name, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.date_of_birth, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.date_of_birth, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+        @Html.ValidationMessageFor(m => m.date_of_birth, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Gender -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.gender, new { @class = "form-label" })
+
+        <div class="form-check">
+            @Html.RadioButtonFor(m => m.gender, "1", new { @class = "form-check-input", id = "genderMale" })
+            <label class="form-check-label" for="genderMale">Nam</label>
+        </div>
+
+        <div class="form-check">
+            @Html.RadioButtonFor(m => m.gender, "0", new { @class = "form-check-input", id = "genderFemale" })
+            <label class="form-check-label" for="genderFemale">Nữ</label>
+        </div>
+
+        <div class="form-check">
+            @Html.RadioButtonFor(m => m.gender, "2", new { @class = "form-check-input", id = "genderOther" })
+            <label class="form-check-label" for="genderOther">Khác</label>
+        </div>
+
+        @Html.ValidationMessageFor(m => m.gender, "", new { @class = "text-danger" })
+    </div>
+
+
+    <!-- Phone Number -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.phone_number, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.phone_number, new { @class = "form-control", type = "tel" })
+        @Html.ValidationMessageFor(m => m.phone_number, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Address -->
+    <div class="col-12">
+        @Html.LabelFor(m => m.address, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.address, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.address, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Avatar Upload -->
+    <div class="col-12">
+        <label for="avatarFile" class="form-label">Tải lên ảnh đại diện</label>
+        <input type="file" name="avatarFile" id="avatarFile" class="form-control" accept="image/*" />
+    </div>
+
+    <!-- Submit Button -->
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">Tạo sinh viên mới</button>
+    </div>
+}

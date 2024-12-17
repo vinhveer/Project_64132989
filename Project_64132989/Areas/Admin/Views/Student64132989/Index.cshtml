@@ -20,10 +20,10 @@
 
 <div id="toolbar">
     <a href="@Url.Action("Create", "Student64132989")" class="btn custom-btn me-2">
-        <i class="bi bi-person-plus-fill"></i> Thêm sinh viên mới
+        <i class="bi bi-person-plus-fill me-2"></i>Thêm sinh viên mới
     </a>
-    <button id="deleteSelectedBtn" class="btn custom-btn text-danger">
-        <i class="bi bi-trash"></i> Xoá các mục đã chọn
+    <button id="deleteSelectedBtn" class="btn custom-btn" style="color: red;">
+        <i class="bi bi-trash me-2"></i>Xoá các mục đã chọn
     </button>
 </div>
 <table id="studentsTable" data-toolbar="#toolbar" data-search="true" data-show-refresh="true"
@@ -101,12 +101,12 @@
             dropdown.style.zIndex = '1100';
             dropdown.innerHTML = `
                 <a class="dropdown-item" href="@Url.Action("Details", "Student64132989")/${userId}">
-                    <i class="bi bi-eye me-2"></i>Chi tiết
+                    <i class="bi bi-info-circle me-2"></i></i>Chi tiết
                 </a>
                 <a class="dropdown-item" href="@Url.Action("Edit", "Student64132989")/${userId}">
                     <i class="bi bi-pencil me-2"></i>Chỉnh sửa
                 </a>
-                <a class="dropdown-item text-danger" href="javascript:void(0);" onclick="deleteStudent('${userId}')">
+                <a class="dropdown-item" href="javascript:void(0);" onclick="deleteStudent('${userId}')" style="color: red;">
                     <i class="bi bi-trash me-2"></i>Xóa
                 </a>
             `;

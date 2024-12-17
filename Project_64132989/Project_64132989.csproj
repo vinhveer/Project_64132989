@@ -189,11 +189,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-    <Compile Include="Areas\Admin\Controllers\Account64132989Controller.cs" />
     <Compile Include="Areas\Admin\Controllers\Home64132989Controller.cs" />
-    <Compile Include="Areas\Admin\Controllers\ProfilesController.cs" />
     <Compile Include="Areas\Admin\Controllers\Student64132989Controller.cs" />
     <Compile Include="Areas\Admin\Data\AddNewUserModel.cs" />
+    <Compile Include="Areas\Admin\Data\ProfileChangePasswordViewModel.cs" />
     <Compile Include="Controllers\Home64132989Controller.cs" />
     <Compile Include="Controllers\Login64132989Controller.cs" />
     <Compile Include="Controllers\Portal64132989Controller.cs" />
@@ -236,12 +235,10 @@
     <Content Include="Areas\Admin\Views\Home64132989\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Student64132989\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Student64132989\UploadStudentList.cshtml" />
-    <Content Include="Areas\Admin\Views\Profiles\Create.cshtml" />
-    <Content Include="Areas\Admin\Views\Profiles\Delete.cshtml" />
-    <Content Include="Areas\Admin\Views\Profiles\Details.cshtml" />
-    <Content Include="Areas\Admin\Views\Profiles\Edit.cshtml" />
-    <Content Include="Areas\Admin\Views\Profiles\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Student64132989\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Student64132989\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\Student64132989\ChangePassword.cshtml" />
+    <Content Include="Areas\Admin\Views\Student64132989\Create.cshtml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -276,8 +273,10 @@
     <Content Include="Views\Profiles64132989\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\Uploads\" />
     <Folder Include="Areas\Admin\Views\Account64132989\" />
+    <Folder Include="Uploads\Avatar\" />
+    <Folder Include="Uploads\Excel\" />
+    <Folder Include="Views\FileManager64132989\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

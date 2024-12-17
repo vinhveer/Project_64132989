@@ -128,7 +128,7 @@ namespace Project_64132989.Controllers
                 Session["UserEmail"] = userInDb.email;
                 Session["UserFullName"] = $"{userProfile.last_name} {userProfile.first_name}";
                 Session["UserId"] = userInDb.user_id;
-                Session["UserRole"] = authTicket.Ticket.UserData; // Role có thể lấy từ UserData hoặc AuthTicket
+                Session["UserRole"] = authTicket.RoleClaimType;
                 Session["Avatar"] = userProfile.avatar_path;
 
                 return new HttpStatusCodeResult(200); // Trả về HTTP 200 để thông báo đã hoàn thành
