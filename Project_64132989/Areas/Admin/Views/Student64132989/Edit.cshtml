@@ -1,7 +1,7 @@
 ﻿@model Project_64132989.Models.Data.Profile
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Chỉnh sửa thông tin sinh viên";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
     var userId = Html.DisplayFor(model => model.user_id);
 }
@@ -14,14 +14,16 @@
 
 <div class="card custom-shadow p-4">
     <div class="row">
-        <div class="col-md-2 text-center">
+        <div class="col-12 col-md-2 d-flex justify-content-center">
             <img src="@(string.IsNullOrEmpty(Model.avatar_path) ? "/Assets/anh.jpg" : Model.avatar_path)"
                  class="rounded-circle"
                  style="width: 7rem; height: 7rem; object-fit: cover;" />
         </div>
-        <div class="col-md-10 d-flex flex-column justify-content-center">
-            <h3 class="mb-1">@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
-            <h6 class="text-muted">@Html.DisplayFor(model => model.User.email)</h6>
+        <div class="col-12 col-md-10 mt-3 mt-md-0 d-flex align-items-md-center">
+            <div class="text-center text-md-start w-100">
+                <h3 class="mb-1">@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
+                <h6 class="text-muted">@Html.DisplayFor(model => model.User.email)</h6>
+            </div>
         </div>
     </div>
 </div>
@@ -83,10 +85,6 @@
         <div class="form-check">
             <input type="radio" class="form-check-input" name="gender" id="genderFemale" value="1" @(Model.gender == 1 ? "checked" : "") />
             <label class="form-check-label" for="genderFemale">Nữ</label>
-        </div>
-        <div class="form-check">
-            <input type="radio" class="form-check-input" name="gender" id="genderOther" value="2" @(Model.gender == 2 ? "checked" : "") />
-            <label class="form-check-label" for="genderOther">Bê đê</label>
         </div>
         @Html.ValidationMessageFor(m => m.gender, "", new { @class = "text-danger" })
     </div>

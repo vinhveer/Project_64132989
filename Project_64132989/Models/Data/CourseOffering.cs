@@ -15,9 +15,11 @@ namespace Project_64132989.Models.Data
         }
 
         [Key]
-        public int offering_id { get; set; }
+        public long offering_id { get; set; }
 
-        public long course_id { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string course_id { get; set; }
 
         public int semester_id { get; set; }
 
@@ -27,14 +29,9 @@ namespace Project_64132989.Models.Data
 
         public int? room_id { get; set; }
 
-        [StringLength(10)]
-        public string section { get; set; }
-
         public int max_capacity { get; set; }
 
-        public int? current_enrollment { get; set; }
-
-        public byte? offering_status { get; set; }
+        public byte? status { get; set; }
 
         public virtual Cours Cours { get; set; }
 

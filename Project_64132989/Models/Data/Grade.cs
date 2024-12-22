@@ -9,23 +9,13 @@ namespace Project_64132989.Models.Data
     public partial class Grade
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public long grade_id { get; set; }
+
         public long registration_id { get; set; }
 
-        public decimal? midterm_score { get; set; }
+        public byte assessment_type { get; set; }
 
-        public decimal? final_score { get; set; }
-
-        public decimal? total_score { get; set; }
-
-        [StringLength(2)]
-        public string grade_letter { get; set; }
-
-        public decimal? grade_point { get; set; }
-
-        public byte? status { get; set; }
-
-        public decimal? partial_score { get; set; }
+        public decimal score { get; set; }
 
         public virtual StudentCourseRegistration StudentCourseRegistration { get; set; }
     }

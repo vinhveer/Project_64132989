@@ -7,14 +7,19 @@
 }
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-2">
-            <img src="@(string.IsNullOrEmpty(Model.avatar_path) ? "/Assets/anh.jpg" : Model.avatar_path)"
-                 style="width: 7rem; height: 7rem; border-radius: 50%; object-fit: cover;" />
-        </div>
-        <div class="col-md-10">
-            <h3>@Model.last_name @Model.first_name</h3>
-            <h6>@Model.User.email</h6>
+    <div class="card custom-shadow p-4">
+        <div class="row">
+            <div class="col-12 col-md-2 d-flex justify-content-center">
+                <img src="@(string.IsNullOrEmpty(Model.avatar_path) ? "/Assets/anh.jpg" : Model.avatar_path)"
+                     class="rounded-circle"
+                     style="width: 7rem; height: 7rem; object-fit: cover;" />
+            </div>
+            <div class="col-12 col-md-10 mt-3 mt-md-0 d-flex align-items-md-center">
+                <div class="text-center text-md-start w-100">
+                    <h3 class="mb-1">@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
+                    <h6 class="text-muted">@Html.DisplayFor(model => model.User.email)</h6>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -70,10 +75,6 @@
                 <input type="radio" class="form-check-input" name="gender" id="genderFemale" value="1" @(Model.gender == 1 ? "checked" : "") />
                 <label class="form-check-label" for="genderFemale">Nữ</label>
             </div>
-            <div class="form-check">
-                <input type="radio" class="form-check-input" name="gender" id="genderOther" value="2" @(Model.gender == 2 ? "checked" : "") />
-                <label class="form-check-label" for="genderOther">Bê đê</label>
-            </div>
             @Html.ValidationMessageFor(m => m.gender, "", new { @class = "text-danger" })
         </div>
 
@@ -104,3 +105,99 @@
         </div>
     }
 </div>
+
+@section Styles {
+    <style>
+        /* Container styling */
+        form {
+            background-color: var(--bs-body-bg, #f9f9f9);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            color: var(--bs-body-color, #333);
+        }
+
+        /* Labels */
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--bs-body-color, #333);
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        /* Input fields */
+        .form-control {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--bs-border-color, #ccc);
+            border-radius: 4px;
+            background-color: var(--bs-body-bg, #fff);
+            color: var(--bs-body-color, #333);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .form-control:focus {
+                border-color: var(--bs-primary, #007bff);
+                box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb, 0, 123, 255), 0.2);
+                outline: none;
+            }
+
+        /* Validation error messages */
+        .text-danger {
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+            color: var(--bs-danger, #e74c3c);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--bs-primary, #007bff);
+            color: var(--bs-btn-color, white);
+            border: none;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--bs-primary-hover-bg, #0056b3);
+            }
+
+        /* Gender radio buttons */
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-check-input {
+            margin-right: 0.5rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            border-color: var(--bs-border-color, #aaa);
+            cursor: pointer;
+        }
+
+            .form-check-input:checked {
+                background-color: var(--bs-primary, #007bff);
+                border-color: var(--bs-primary, #007bff);
+            }
+
+        .form-check-label {
+            font-size: 0.875rem;
+            color: var(--bs-body-color, #333);
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            form {
+                padding: 1rem;
+            }
+        }
+    </style>
+}

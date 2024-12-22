@@ -7,14 +7,19 @@
 }
 
 <div class="container">
-    <div class="row">
-        <div class="col-md-2">
-            <img src="@(string.IsNullOrEmpty(Model.avatar_path) ? "/Assets/anh.jpg" : Model.avatar_path)" style="width: 7rem; height: 7rem; border-radius: 50%; object-fit: cover;" />
-
-        </div>
-        <div class="col-md-10">
-            <h3>@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
-            <h6>@Html.DisplayFor(model => model.User.email)</h6>
+    <div class="card custom-shadow p-4">
+        <div class="row">
+            <div class="col-12 col-md-2 d-flex justify-content-center">
+                <img src="@(string.IsNullOrEmpty(Model.avatar_path) ? "/Assets/anh.jpg" : Model.avatar_path)"
+                     class="rounded-circle"
+                     style="width: 7rem; height: 7rem; object-fit: cover;" />
+            </div>
+            <div class="col-12 col-md-10 mt-3 mt-md-0 d-flex align-items-md-center">
+                <div class="text-center text-md-start w-100">
+                    <h3 class="mb-1">@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
+                    <h6 class="text-muted">@Html.DisplayFor(model => model.User.email)</h6>
+                </div>
+            </div>
         </div>
     </div>
 

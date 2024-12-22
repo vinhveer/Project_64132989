@@ -80,65 +80,17 @@ namespace Project_64132989.Controllers
             switch (role)
             {
                 case "Student":
-                    return RedirectToAction("Index", "Home64132989");
+                    return RedirectToAction("Index", "Home64132989", new { area = "Student" });
                 case "Teacher":
-                    return RedirectToAction("Index", "Home64132989");
+                    return RedirectToAction("Index", "Home64132989", new { area = "Teacher" });
                 case "TrainingOfficer":
-                    return RedirectToAction("Index", "Home64132989");
+                    return RedirectToAction("Index", "Home64132989", new { area = "TrainingOfficer" });
                 case "Admin":
                     return RedirectToAction("Index", "Home64132989", new { area = "Admin" });
                 default:
                     return RedirectToAction("Index", "Home64132989");
             }
         }
-
-        [HttpGet]
-        public ActionResult ReloadInfo()
-        {
-            try
-            {
-                // Lấy thông tin từ AuthTicket
-                var authTicket = User.Identity as FormsIdentity;
-                if (authTicket == null)
-                {
-                    return new HttpStatusCodeResult(400, "AuthTicket không hợp lệ.");
-                }
-
-                string userData = authTicket.Ticket.UserData;
-                if (string.IsNullOrEmpty(userData))
-                {
-                    return new HttpStatusCodeResult(400, "Dữ liệu người dùng không hợp lệ.");
-                }
-
-                // Tìm người dùng trong database
-                var userInDb = _db.Users.FirstOrDefault(u => u.user_id.ToString() == userData);
-                if (userInDb == null)
-                {
-                    return new HttpStatusCodeResult(400, "Người dùng không tồn tại.");
-                }
-
-                // Tìm hồ sơ người dùng trong database
-                var userProfile = _db.Profiles.FirstOrDefault(p => p.user_id == userInDb.user_id);
-                if (userProfile == null)
-                {
-                    return new HttpStatusCodeResult(400, "Hồ sơ người dùng không tồn tại.");
-                }
-
-                // Lưu thông tin vào session
-                Session["UserEmail"] = userInDb.email;
-                Session["UserFullName"] = $"{userProfile.last_name} {userProfile.first_name}";
-                Session["UserId"] = userInDb.user_id;
-                Session["UserRole"] = authTicket.RoleClaimType;
-                Session["Avatar"] = userProfile.avatar_path;
-
-                return new HttpStatusCodeResult(200); // Trả về HTTP 200 để thông báo đã hoàn thành
-            }
-            catch (Exception ex)
-            {
-                return new HttpStatusCodeResult(500, $"Có lỗi xảy ra: {ex.Message}"); // Trả về lỗi nếu có exception
-            }
-        }
-
 
         [Authorize]
         public ActionResult Direct()
@@ -150,11 +102,11 @@ namespace Project_64132989.Controllers
             switch (role)
             {
                 case "Student":
-                    return RedirectToAction("Index", "Home64132989");
+                    return RedirectToAction("Index", "Home64132989", new { area = "Student" });
                 case "Teacher":
-                    return RedirectToAction("Index", "Home64132989");
+                    return RedirectToAction("Index", "Home64132989", new { area = "Teacher" });
                 case "TrainingOfficer":
-                    return RedirectToAction("Index", "Home64132989");
+                    return RedirectToAction("Index", "Home64132989", new { area = "TrainingOfficer" });
                 case "Admin":
                     return RedirectToAction("Index", "Home64132989", new { area = "Admin" });
                 default:

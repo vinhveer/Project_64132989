@@ -6,10 +6,10 @@ namespace Project_64132989.Models.Data
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    public partial class AdministrativeClass
+    public partial class AdminClass
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public AdministrativeClass()
+        public AdminClass()
         {
             Students = new HashSet<Student>();
         }
@@ -19,18 +19,21 @@ namespace Project_64132989.Models.Data
         public string class_id { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string class_name { get; set; }
 
-        [StringLength(100)]
-        public string program { get; set; }
-
-        public int? start_year { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string department_id { get; set; }
 
         [StringLength(10)]
-        public string advisor_user_id { get; set; }
+        public string advisor_teacher_id { get; set; }
 
-        public int total_students { get; set; }
+        public DateTime? created_date { get; set; }
+
+        public byte? status { get; set; }
+
+        public virtual Department Department { get; set; }
 
         public virtual Teacher Teacher { get; set; }
 

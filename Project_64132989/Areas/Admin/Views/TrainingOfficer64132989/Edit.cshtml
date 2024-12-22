@@ -1,0 +1,117 @@
+﻿@model Project_64132989.Models.Data.Profile
+
+@{
+    ViewBag.Title = "Chỉnh sửa thông tin nhân viên";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var userId = Html.DisplayFor(model => model.user_id);
+}
+
+<p>
+    <a href="@Url.Action("Index")" class="btn custom-btn">
+        <i class="bi bi-arrow-left fs-6"></i>
+    </a>
+</p>
+
+<div class="card custom-shadow p-4">
+    <div class="row">
+        <div class="col-12 col-md-2 d-flex justify-content-center">
+            <img src="@(string.IsNullOrEmpty(Model.avatar_path) ? "/Assets/anh.jpg" : Model.avatar_path)"
+                 class="rounded-circle"
+                 style="width: 7rem; height: 7rem; object-fit: cover;" />
+        </div>
+        <div class="col-12 col-md-10 mt-3 mt-md-0 d-flex align-items-md-center">
+            <div class="text-center text-md-start w-100">
+                <h3 class="mb-1">@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
+                <h6 class="text-muted">@Html.DisplayFor(model => model.User.email)</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ul class="nav nav-tabs mt-4 mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Details" ? "active" : "")"
+           href="@Url.Action("Details", "TrainingOfficer64132989", new { id = userId })">
+            <i class="bi bi-info-circle me-2"></i> Thông tin nhân viên
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active"
+           href="@Url.Action("Edit", "TrainingOfficer64132989", new { id = userId })">
+            <i class="bi bi-pencil-square me-2"></i> Thay đổi thông tin cá nhân
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link"
+           href="@Url.Action("ChangePassword", "TrainingOfficer64132989", new { id = userId })">
+            <i class="bi bi-person-fill-lock me-2"></i> Đặt lại mật khẩu
+        </a>
+    </li>
+</ul>
+
+@using (Html.BeginForm("Edit", "TrainingOfficer64132989", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.user_id)
+
+    <!-- First Name -->
+    <div class="mb-3">
+        @Html.LabelFor(m => m.first_name, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.first_name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.first_name, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Last Name -->
+    <div class="mb-3">
+        @Html.LabelFor(m => m.last_name, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.last_name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.last_name, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Date of Birth -->
+    <div class="mb-3">
+        @Html.LabelFor(m => m.date_of_birth, new { @class = "form-label" })
+        <input type="date" name="date_of_birth" value="@(Model.date_of_birth?.ToString("yyyy-MM-dd"))" class="form-control" />
+        @Html.ValidationMessageFor(m => m.date_of_birth, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Gender -->
+    <div class="mb-3">
+        @Html.Label("Giới tính", new { @class = "form-label" })
+        <div class="form-check">
+            <input type="radio" class="form-check-input" name="gender" id="genderMale" value="0" @(Model.gender == 0 ? "checked" : "") />
+            <label class="form-check-label" for="genderMale">Nam</label>
+        </div>
+        <div class="form-check">
+            <input type="radio" class="form-check-input" name="gender" id="genderFemale" value="1" @(Model.gender == 1 ? "checked" : "") />
+            <label class="form-check-label" for="genderFemale">Nữ</label>
+        </div>
+        @Html.ValidationMessageFor(m => m.gender, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Phone Number -->
+    <div class="mb-3">
+        @Html.LabelFor(m => m.phone_number, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.phone_number, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.phone_number, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Address -->
+    <div class="mb-3">
+        @Html.LabelFor(m => m.address, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.address, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.address, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Avatar Upload -->
+    <div class="mb-3">
+        @Html.Label("Ảnh đại diện (Tải lên để thay đổi)", new { @class = "form-label" })
+        <input type="file" name="avatar_file" id="avatar_file" class="form-control" />
+        @Html.ValidationMessageFor(m => m.avatar_path, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Submit Button -->
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Lưu</button>
+    </div>
+}

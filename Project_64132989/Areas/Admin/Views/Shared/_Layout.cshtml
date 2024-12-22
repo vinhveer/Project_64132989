@@ -100,7 +100,7 @@
         <a class="navbar-brand col-md-3 col-lg-3 me-0 px-3 fs-6 d-flex align-items-center text-decoration-none"
            href="@Url.Action("Index", "Home64132989")">
             <img src="~/Assets/ntu.svg" alt="Logo" style="height: 2.5em; padding: 0">
-            <h6 class="m-0 ms-2 fw-semibold fs-6">| NTU-UMS</h6>
+            <h6 class="m-0 ms-2 fw-semibold fs-6">NTU-UMS</h6>
         </a>
         <ul class="navbar-nav flex-row align-items-center">
             @if (User.Identity.IsAuthenticated)
@@ -132,32 +132,33 @@
                                 data-bs-target="#sidebarMenu" aria-label="Close"></button>
                     </div>
                     <div class="offcanvas-body d-md-flex flex-column p-0 overflow-y-auto">
-                        @*<h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-                                <span>Sinh viên</span>
-                                <a class="link-secondary" href="#" aria-label="Add a new report">
-                                    <i class="bi bi-plus-circle"></i>
-                                </a>
-                            </h6>*@
-                        <ul class="nav flex-column mt-3">
-                            <li class="">
-                                <a class="nav-link d-flex align-items-center gap-3"
+                        <ul class="nav flex-column" style="margin-top: 60px">
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Student64132989" ? "active" : "")"
                                    href="@Url.Action("Index", "Student64132989")" title="Trang quản lý sinh viên">
                                     <i class="bi bi-person fs-5"></i>
-                                    Danh sách sinh viên
+                                    Sinh viên
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3"
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Teacher64132989" ? "active" : "")"
                                    href="@Url.Action("Index", "Teacher64132989")" title="Trang quản lý giảng viên">
                                     <i class="bi bi-person-badge fs-5"></i>
-                                    Danh sách giảng viên
+                                    Giảng viên
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3"
-                                   href="@Url.Action("Index", "Employee64132989")" title="Trang quản lý nhân viên">
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "TrainingOfficer64132989" ? "active" : "")"
+                                   href="@Url.Action("Index", "TrainingOfficer64132989")" title="Trang quản lý nhân viên">
                                     <i class="bi bi-briefcase fs-5"></i>
-                                    Danh sách nhân viên
+                                    Nhân viên phòng đào tạo
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "admin64132989" ? "active" : "")"
+                                   href="@Url.Action("Index", "admin64132989")" title="Trang quản lý quản trị viên">
+                                    <i class="bi bi-briefcase fs-5"></i>
+                                    Quản trị viên
                                 </a>
                             </li>
                         </ul>
@@ -187,27 +188,6 @@
     @Scripts.Render("~/bundles/jquery")
     @RenderSection("scripts", required: false)
     @RenderSection("Styles", required: false)
-
-    <script>
-        function reloadUserInfo() {
-            // Gọi ReloadInfo API
-            $.get('https://localhost:44348/Login64132989/ReloadInfo', function (response) {
-                if (response.status === 200) {
-                    // Refresh trang sau khi cập nhật thông tin session thành công
-                    location.reload();
-                    console.assert('Thông tin người dùng đã được cập nhật.');
-                } else {
-                    console.error('Có lỗi xảy ra khi tải lại thông tin người dùng.');
-                }
-            }).fail(function () {
-                console.error('Lỗi khi gọi API.');
-            });
-        }
-
-        $(document).ready(function () {
-            reloadUserInfo();
-        });
-    </script>
 </body>
 
 </html>

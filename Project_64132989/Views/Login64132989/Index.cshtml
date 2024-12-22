@@ -13,7 +13,7 @@
                     <!-- Logo (Optional) -->
                     <div class="text-center mb-4">
                         <img src="@Url.Content("~/Assets/ntu.svg")" alt="Logo" class="img-fluid rounded-circle m-5 mt-3 mb-3" style="height: 8em" />
-                        <h4 class="fw-semibold">Chào mừng bạn 🎉</h4>
+                        <h4 class="fw-semibold">Chào mừng bạn</h4>
                         <p class="text-muted">Đăng nhập hệ thống để tiếp tục</p>
                     </div>
 
@@ -65,3 +65,14 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        body {
+            background-image: url('@Url.Content("~/Assets/background.jpg")');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+}

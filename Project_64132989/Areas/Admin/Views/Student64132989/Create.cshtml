@@ -1,6 +1,6 @@
 ﻿@model Project_64132989.Areas.Admin.Data.AddNewUserModel
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Thêm sinh viên mới";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
@@ -13,7 +13,14 @@
 
 <h3 class="mb-4 mt-4">Thêm sinh viên mới</h3>
 
-@using (Html.BeginForm("Create", "Student64132989", FormMethod.Post, new { enctype = "multipart/form-data", @class = "row g-3 needs-validation", novalidate = "novalidate" }))
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@using (Html.BeginForm("Create", "Student64132989", FormMethod.Post, new { enctype = "multipart/form-data", @class = "row g-3 needs-validation" }))
 {
     @Html.AntiForgeryToken()
 

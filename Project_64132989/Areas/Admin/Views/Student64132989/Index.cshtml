@@ -26,7 +26,7 @@
         <i class="bi bi-trash me-2"></i>Xoá các mục đã chọn
     </button>
 </div>
-<table id="studentsTable" data-toolbar="#toolbar" data-search="true" data-show-refresh="true"
+<table id="studentsTable" class="table-responsive" data-toolbar="#toolbar" data-search="true" data-show-refresh="true"
        data-show-toggle="true" data-show-fullscreen="true" data-show-columns="true" data-show-export="true"
        data-detail-view="false" data-click-to-select="true" data-pagination="true" data-side-pagination="server"
        data-url="@Url.Action("GetStudentList", "Student64132989")" data-method="post" data-sort-name="userId"
@@ -34,7 +34,7 @@
     <thead>
         <tr>
             <th data-field="state" data-checkbox="true"></th>
-            <th data-field="userId" data-sortable="true">Mã số sinh viên</th>
+            <th data-field="userId" data-sortable="true">Mã số</th>
             <th data-field="fullName" data-sortable="true">Họ và tên</th>
             <th data-field="email" data-sortable="true">Email</th>
             <th data-field="phoneNumber">Số điện thoại</th>

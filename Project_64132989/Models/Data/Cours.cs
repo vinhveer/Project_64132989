@@ -14,14 +14,12 @@ namespace Project_64132989.Models.Data
         {
             CourseOfferings = new HashSet<CourseOffering>();
             Courses1 = new HashSet<Cours>();
+            TrainingProgramCourses = new HashSet<TrainingProgramCours>();
         }
 
         [Key]
-        public long course_id { get; set; }
-
-        [Required]
         [StringLength(20)]
-        public string course_code { get; set; }
+        public string course_id { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -31,19 +29,28 @@ namespace Project_64132989.Models.Data
 
         public int credits { get; set; }
 
-        [StringLength(100)]
-        public string department { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string department_id { get; set; }
 
-        public byte? course_level { get; set; }
+        public byte course_type { get; set; }
 
-        public long? prerequisite_course_id { get; set; }
+        [StringLength(20)]
+        public string prerequisite_course_id { get; set; }
+
+        public byte? status { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CourseOffering> CourseOfferings { get; set; }
+
+        public virtual Department Department { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Cours> Courses1 { get; set; }
 
         public virtual Cours Cours1 { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TrainingProgramCours> TrainingProgramCourses { get; set; }
     }
 }

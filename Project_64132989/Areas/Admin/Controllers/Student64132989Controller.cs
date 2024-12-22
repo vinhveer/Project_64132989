@@ -1,18 +1,18 @@
 ﻿using OfficeOpenXml; // Sử dụng EPPlus 4.x hoặc ClosedXML
-using Project_64132989.Models.Data;
 using Project_64132989.Areas.Admin.Data;
+using Project_64132989.Models.Data;
 using System;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
-using System.Net.Mail;
 
 namespace Project_64132989.Areas.Admin.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class Student64132989Controller : Controller
     {
         private readonly Model64132989DbContext _context = new Model64132989DbContext();
@@ -63,9 +63,9 @@ namespace Project_64132989.Areas.Admin.Controllers
                     if (avatarFile != null && avatarFile.ContentLength > 0)
                     {
                         var fileName = Path.GetFileName(avatarFile.FileName);
-                        var path = Path.Combine(Server.MapPath("~/Uploads/Avatars"), fileName);
+                        var path = Path.Combine(Server.MapPath("~/Uploads/Avatar"), fileName);
                         avatarFile.SaveAs(path);
-                        profile.avatar_path = "/Uploads/Avatars/" + fileName; // Lưu đường dẫn ảnh vào DB
+                        profile.avatar_path = "/Uploads/Avatar/" + fileName; // Lưu đường dẫn ảnh vào DB
                     }
 
                     // Lưu vào DB
@@ -77,7 +77,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Error: " + ex.Message);
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra: " + ex.Message;
                 }
             }
 
@@ -125,7 +125,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                     email = u.email,
                     phoneNumber = u.Profile.phone_number,
                     dateOfBirth = u.Profile.date_of_birth,
-                    gender = u.Profile.gender == 1 ? "Nam" : (u.Profile.gender == 0 ? "Nữ" : "Khác")
+                    gender = u.Profile.gender == 1 ? "Nữ" : (u.Profile.gender == 0 ? "Nam" : "Khác")
                 })
                 .ToList();
 
@@ -246,7 +246,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                         {
                             user_id = userId,
                             email = email,
-                            password_hash = password,
+                            password_hash = BCrypt.Net.BCrypt.HashPassword(password),
                             user_type = 1, // Sinh viên
                             created_at = DateTime.Now
                         };
@@ -427,11 +427,11 @@ namespace Project_64132989.Areas.Admin.Controllers
                     _context.SaveChanges();
 
                     // Gửi email kèm mật khẩu mới
-                    string loginLink = Url.Action("Login", "Account", null, Request.Url.Scheme);
+                    string loginLink = Url.Action("Login", "Login64132989", new { area = "" }, Request.Url.Scheme);
                     SendChangePasswordEmail(user.email, plainPassword, loginLink);
 
                     TempData["SuccessMessage"] = "Mật khẩu đã được thay đổi và gửi đến email của người dùng.";
-                    return RedirectToAction("Index");
+                    return View(model);
                 }
                 catch (Exception ex)
                 {
@@ -469,7 +469,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                             <a href='{loginLink}'>Đăng nhập ngay</a>
                             <p>Nếu bạn không yêu cầu thay đổi này, vui lòng liên hệ với quản trị viên ngay lập tức.</p>
                             <p>Trân trọng,</p>
-                            <p>NTU_UTMS</p>
+                            <p>NTU_UMS</p>
                         ",
                         IsBodyHtml = true
                     };

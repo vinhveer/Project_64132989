@@ -1,0 +1,75 @@
+﻿@model Project_64132989.Models.Data.Semester
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Semester</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.semester_name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.semester_name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.start_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.start_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.end_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.end_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.registration_start_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.registration_start_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.registration_end_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.registration_end_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.academic_year)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.academic_year)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.status)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.semester_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

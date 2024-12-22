@@ -12,9 +12,10 @@ namespace Project_64132989.Models.Data
         {
         }
 
-        public virtual DbSet<AdministrativeClass> AdministrativeClasses { get; set; }
+        public virtual DbSet<AdminClass> AdminClasses { get; set; }
         public virtual DbSet<CourseOffering> CourseOfferings { get; set; }
         public virtual DbSet<Cours> Courses { get; set; }
+        public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Grade> Grades { get; set; }
         public virtual DbSet<Profile> Profiles { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
@@ -23,30 +24,35 @@ namespace Project_64132989.Models.Data
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<Teacher> Teachers { get; set; }
+        public virtual DbSet<TrainingProgramCours> TrainingProgramCourses { get; set; }
+        public virtual DbSet<TrainingProgram> TrainingPrograms { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AdministrativeClass>()
+            modelBuilder.Entity<AdminClass>()
                 .Property(e => e.class_id)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<AdministrativeClass>()
-                .Property(e => e.advisor_user_id)
+            modelBuilder.Entity<AdminClass>()
+                .Property(e => e.department_id)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<AdministrativeClass>()
+            modelBuilder.Entity<AdminClass>()
+                .Property(e => e.advisor_teacher_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<AdminClass>()
                 .HasMany(e => e.Students)
-                .WithRequired(e => e.AdministrativeClass)
-                .HasForeignKey(e => e.administrative_class_id)
-                .WillCascadeOnDelete(false);
+                .WithOptional(e => e.AdminClass)
+                .HasForeignKey(e => e.administrative_class_id);
+
+            modelBuilder.Entity<CourseOffering>()
+                .Property(e => e.course_id)
+                .IsUnicode(false);
 
             modelBuilder.Entity<CourseOffering>()
                 .Property(e => e.teacher_user_id)
-                .IsUnicode(false);
-
-            modelBuilder.Entity<CourseOffering>()
-                .Property(e => e.section)
                 .IsUnicode(false);
 
             modelBuilder.Entity<CourseOffering>()
@@ -55,7 +61,15 @@ namespace Project_64132989.Models.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Cours>()
-                .Property(e => e.course_code)
+                .Property(e => e.course_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Cours>()
+                .Property(e => e.department_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Cours>()
+                .Property(e => e.prerequisite_course_id)
                 .IsUnicode(false);
 
             modelBuilder.Entity<Cours>()
@@ -68,29 +82,37 @@ namespace Project_64132989.Models.Data
                 .WithOptional(e => e.Cours1)
                 .HasForeignKey(e => e.prerequisite_course_id);
 
-            modelBuilder.Entity<Grade>()
-                .Property(e => e.midterm_score)
-                .HasPrecision(5, 2);
+            modelBuilder.Entity<Cours>()
+                .HasMany(e => e.TrainingProgramCourses)
+                .WithRequired(e => e.Cours)
+                .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<Grade>()
-                .Property(e => e.final_score)
-                .HasPrecision(5, 2);
-
-            modelBuilder.Entity<Grade>()
-                .Property(e => e.total_score)
-                .HasPrecision(5, 2);
-
-            modelBuilder.Entity<Grade>()
-                .Property(e => e.grade_letter)
-                .IsFixedLength()
+            modelBuilder.Entity<Department>()
+                .Property(e => e.department_id)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<Grade>()
-                .Property(e => e.grade_point)
-                .HasPrecision(3, 2);
+            modelBuilder.Entity<Department>()
+                .HasMany(e => e.AdminClasses)
+                .WithRequired(e => e.Department)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Department>()
+                .HasMany(e => e.Courses)
+                .WithRequired(e => e.Department)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Department>()
+                .HasMany(e => e.Teachers)
+                .WithRequired(e => e.Department)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Department>()
+                .HasMany(e => e.TrainingPrograms)
+                .WithRequired(e => e.Department)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Grade>()
-                .Property(e => e.partial_score)
+                .Property(e => e.score)
                 .HasPrecision(5, 2);
 
             modelBuilder.Entity<Profile>()
@@ -107,15 +129,20 @@ namespace Project_64132989.Models.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<StudentCourseRegistration>()
-                .Property(e => e.student_user_id)
+                .Property(e => e.student_id)
                 .IsUnicode(false);
 
             modelBuilder.Entity<StudentCourseRegistration>()
-                .HasOptional(e => e.Grade)
-                .WithRequired(e => e.StudentCourseRegistration);
+                .HasMany(e => e.Grades)
+                .WithRequired(e => e.StudentCourseRegistration)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Student>()
                 .Property(e => e.user_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Student>()
+                .Property(e => e.program_id)
                 .IsUnicode(false);
 
             modelBuilder.Entity<Student>()
@@ -125,7 +152,7 @@ namespace Project_64132989.Models.Data
             modelBuilder.Entity<Student>()
                 .HasMany(e => e.StudentCourseRegistrations)
                 .WithRequired(e => e.Student)
-                .HasForeignKey(e => e.student_user_id)
+                .HasForeignKey(e => e.student_id)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Teacher>()
@@ -133,14 +160,48 @@ namespace Project_64132989.Models.Data
                 .IsUnicode(false);
 
             modelBuilder.Entity<Teacher>()
-                .HasMany(e => e.AdministrativeClasses)
+                .Property(e => e.department_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Teacher>()
+                .HasMany(e => e.AdminClasses)
                 .WithOptional(e => e.Teacher)
-                .HasForeignKey(e => e.advisor_user_id);
+                .HasForeignKey(e => e.advisor_teacher_id);
 
             modelBuilder.Entity<Teacher>()
                 .HasMany(e => e.CourseOfferings)
                 .WithRequired(e => e.Teacher)
                 .HasForeignKey(e => e.teacher_user_id)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<TrainingProgramCours>()
+                .Property(e => e.program_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<TrainingProgramCours>()
+                .Property(e => e.course_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<TrainingProgram>()
+                .Property(e => e.program_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<TrainingProgram>()
+                .Property(e => e.department_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<TrainingProgram>()
+                .Property(e => e.version)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<TrainingProgram>()
+                .HasMany(e => e.Students)
+                .WithRequired(e => e.TrainingProgram)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<TrainingProgram>()
+                .HasMany(e => e.TrainingProgramCourses)
+                .WithRequired(e => e.TrainingProgram)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<User>()

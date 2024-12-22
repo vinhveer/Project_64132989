@@ -20,7 +20,7 @@ namespace Project_64132989.Models.Data
 
         [Required]
         [StringLength(10)]
-        public string administrative_class_id { get; set; }
+        public string program_id { get; set; }
 
         public int entry_year { get; set; }
 
@@ -28,10 +28,15 @@ namespace Project_64132989.Models.Data
 
         public byte? academic_status { get; set; }
 
-        public virtual AdministrativeClass AdministrativeClass { get; set; }
+        [StringLength(10)]
+        public string administrative_class_id { get; set; }
+
+        public virtual AdminClass AdminClass { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StudentCourseRegistration> StudentCourseRegistrations { get; set; }
+
+        public virtual TrainingProgram TrainingProgram { get; set; }
 
         public virtual User User { get; set; }
     }

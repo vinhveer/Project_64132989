@@ -11,7 +11,7 @@ namespace Project_64132989.Models.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Teacher()
         {
-            AdministrativeClasses = new HashSet<AdministrativeClass>();
+            AdminClasses = new HashSet<AdminClass>();
             CourseOfferings = new HashSet<CourseOffering>();
         }
 
@@ -19,21 +19,22 @@ namespace Project_64132989.Models.Data
         [StringLength(10)]
         public string user_id { get; set; }
 
-        [StringLength(100)]
-        public string department { get; set; }
+        [Required]
+        [StringLength(10)]
+        public string department_id { get; set; }
 
         [StringLength(50)]
         public string academic_rank { get; set; }
 
         public string research_areas { get; set; }
 
-        public int? teaching_experience { get; set; }
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<AdministrativeClass> AdministrativeClasses { get; set; }
+        public virtual ICollection<AdminClass> AdminClasses { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CourseOffering> CourseOfferings { get; set; }
+
+        public virtual Department Department { get; set; }
 
         public virtual User User { get; set; }
     }

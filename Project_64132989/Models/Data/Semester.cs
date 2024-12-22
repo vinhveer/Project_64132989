@@ -27,10 +27,8 @@ namespace Project_64132989.Models.Data
         [Column(TypeName = "date")]
         public DateTime end_date { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime registration_start_date { get; set; }
 
-        [Column(TypeName = "date")]
         public DateTime registration_end_date { get; set; }
 
         [StringLength(20)]
