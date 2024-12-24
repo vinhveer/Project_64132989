@@ -1,0 +1,52 @@
+﻿@model IEnumerable<Project_64132989.Models.Data.StudentLearningPlan>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Students/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Cours.course_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Semester.semester_name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Student.program_id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.planned_date)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Cours.course_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Semester.semester_name)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Student.program_id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.planned_date)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.learning_plan_id }) |
+            @Html.ActionLink("Details", "Details", new { id=item.learning_plan_id }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.learning_plan_id })
+        </td>
+    </tr>
+}
+
+</table>

@@ -12,6 +12,7 @@ namespace Project_64132989.Models.Data
         public Student()
         {
             StudentCourseRegistrations = new HashSet<StudentCourseRegistration>();
+            StudentLearningPlans = new HashSet<StudentLearningPlan>();
         }
 
         [Key]
@@ -35,6 +36,9 @@ namespace Project_64132989.Models.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StudentCourseRegistration> StudentCourseRegistrations { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StudentLearningPlan> StudentLearningPlans { get; set; }
 
         public virtual TrainingProgram TrainingProgram { get; set; }
 

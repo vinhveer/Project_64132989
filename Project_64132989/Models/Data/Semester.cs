@@ -12,6 +12,7 @@ namespace Project_64132989.Models.Data
         public Semester()
         {
             CourseOfferings = new HashSet<CourseOffering>();
+            StudentLearningPlans = new HashSet<StudentLearningPlan>();
         }
 
         [Key]
@@ -21,22 +22,20 @@ namespace Project_64132989.Models.Data
         [StringLength(50)]
         public string semester_name { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateTime start_date { get; set; }
+        public DateTime? registration_start_date { get; set; }
 
-        [Column(TypeName = "date")]
-        public DateTime end_date { get; set; }
-
-        public DateTime registration_start_date { get; set; }
-
-        public DateTime registration_end_date { get; set; }
-
-        [StringLength(20)]
-        public string academic_year { get; set; }
+        public DateTime? registration_end_date { get; set; }
 
         public byte? status { get; set; }
 
+        public DateTime? course_registration_start { get; set; }
+
+        public DateTime? course_registration_end { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CourseOffering> CourseOfferings { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<StudentLearningPlan> StudentLearningPlans { get; set; }
     }
 }

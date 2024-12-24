@@ -1,70 +1,76 @@
-﻿@model IEnumerable<Project_64132989.Models.Data.TrainingProgram>
-
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "Danh sách chương trình đào tạo";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h4>Danh sách chương trình đào tạo</h4>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Department.department_name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.program_name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.total_credits)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.version)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.start_year)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.end_year)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.status)
-        </th>
-        <th></th>
-    </tr>
+<div id="toolbar">
+    <a href="@Url.Action("Create", "TrainingPrograms64132989")" class="btn custom-btn me-2">
+        <i class="bi bi-plus-circle me-2"></i>Thêm chương trình mới
+    </a>
+</div>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Department.department_name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.program_name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.total_credits)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.version)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.start_year)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.end_year)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.status)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.program_id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.program_id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.program_id })
-        </td>
-    </tr>
-}
-
+<table id="programsTable" class="table-responsive"
+       data-toolbar="#toolbar"
+       data-search="true"
+       data-show-refresh="true"
+       data-show-toggle="true"
+       data-show-fullscreen="true"
+       data-show-columns="true"
+       data-show-export="true"
+       data-detail-view="false"
+       data-click-to-select="true"
+       data-pagination="true"
+       data-side-pagination="server"
+       data-url="@Url.Action("GetTrainingProgramList", "TrainingPrograms64132989")"
+       data-method="post"
+       data-sort-name="programId"
+       data-sort-order="asc"
+       data-page-list="[10, 25, 50, 100]">
+    <thead>
+        <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="programId" data-sortable="true">Mã CTĐT</th>
+            <th data-field="programName" data-sortable="true">Tên CTĐT</th>
+            <th data-field="totalCredits" data-sortable="true">Tổng tín chỉ</th>
+            <th data-field="version" data-sortable="true">Phiên bản</th>
+            <th data-field="status" data-sortable="true">Trạng thái</th>
+            <th data-field="actions" data-formatter="actionFormatter" data-class="p-0" data-align="center"></th>
+        </tr>
+    </thead>
 </table>
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table-locale-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var $table = $('#programsTable');
+
+        function actionFormatter(value, row) {
+            return [
+                '<a class="btn custom-btn btn-sm m-2" href="@Url.Action("Details", "TrainingPrograms64132989")/' + row.programId + '">',
+                '<i class="bi bi-eye me-2"></i>Xem chi tiết CTĐT',
+                '</a>'
+            ].join('');
+        }
+
+        function initTable() {
+            $table.bootstrapTable('destroy').bootstrapTable({
+                locale: "vi-VN"
+            });
+        }
+
+        $(function () {
+            initTable();
+            $('#locale').change(initTable);
+        });
+    </script>
+}

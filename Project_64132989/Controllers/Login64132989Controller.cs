@@ -80,9 +80,9 @@ namespace Project_64132989.Controllers
             switch (role)
             {
                 case "Student":
-                    return RedirectToAction("Index", "Home64132989", new { area = "Student" });
+                    return RedirectToAction("Index", "Home64132989", new { area = "Students" });
                 case "Teacher":
-                    return RedirectToAction("Index", "Home64132989", new { area = "Teacher" });
+                    return RedirectToAction("Index", "Home64132989", new { area = "Teachers" });
                 case "TrainingOfficer":
                     return RedirectToAction("Index", "Home64132989", new { area = "TrainingOfficer" });
                 case "Admin":
@@ -102,9 +102,9 @@ namespace Project_64132989.Controllers
             switch (role)
             {
                 case "Student":
-                    return RedirectToAction("Index", "Home64132989", new { area = "Student" });
+                    return RedirectToAction("Index", "Home64132989", new { area = "Students" });
                 case "Teacher":
-                    return RedirectToAction("Index", "Home64132989", new { area = "Teacher" });
+                    return RedirectToAction("Index", "Home64132989", new { area = "Teachers" });
                 case "TrainingOfficer":
                     return RedirectToAction("Index", "Home64132989", new { area = "TrainingOfficer" });
                 case "Admin":

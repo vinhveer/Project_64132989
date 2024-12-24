@@ -1,86 +1,98 @@
 ﻿@model Project_64132989.Models.Data.TrainingProgram
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Chỉnh sửa chương trình đào tạo";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Edit</h2>
+<p>
+    <a href="@Url.Action("Index")" class="btn custom-btn">
+        <i class="bi bi-arrow-left fs-6"></i>
+    </a>
+</p>
 
-@using (Html.BeginForm())
+<h3 class="mb-4 mt-4">Chỉnh sửa chương trình đào tạo</h3>
+
+@if (ViewBag.Message != null)
 {
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>TrainingProgram</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.program_id)
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.department_id, "department_id", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("department_id", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.department_id, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.program_name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.program_name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.program_name, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.total_credits, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.total_credits, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.total_credits, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.version, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.version, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.version, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.start_year, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.start_year, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.start_year, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.end_year, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.end_year, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.end_year, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.status, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+@using (Html.BeginForm("Edit", "TrainingProgram", FormMethod.Post, new { @class = "row g-3 needs-validation" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.program_id)
+
+    <!-- Department -->
+    <div class="col-md-12">
+        @Html.LabelFor(m => m.department_id, new { @class = "form-label" })
+        @Html.DropDownList("department_id", null, new { @class = "form-select", required = "required" })
+        @Html.ValidationMessageFor(m => m.department_id, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Program Name -->
+    <div class="col-md-12">
+        @Html.LabelFor(m => m.program_name, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.program_name, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.program_name, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Total Credits -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.total_credits, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.total_credits, new { @class = "form-control", type = "number", required = "required" })
+        @Html.ValidationMessageFor(m => m.total_credits, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Version -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.version, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.version, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.version, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Year Range -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.start_year, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.start_year, new { @class = "form-control", type = "number", required = "required" })
+        @Html.ValidationMessageFor(m => m.start_year, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.end_year, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.end_year, new { @class = "form-control", type = "number", required = "required" })
+        @Html.ValidationMessageFor(m => m.end_year, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Status -->
+    <div class="col-md-12">
+        @Html.LabelFor(m => m.status, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.status, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.status, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Submit Button -->
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        // Validate years when form is submitted
+        $(document).ready(function () {
+            $('form').submit(function (e) {
+                var startYear = parseInt($('#start_year').val());
+                var endYear = parseInt($('#end_year').val());
+
+                if (endYear < startYear) {
+                    e.preventDefault();
+                    alert('Năm kết thúc phải sau năm bắt đầu');
+                    return false;
+                }
+            });
+        });
+    </script>
+}

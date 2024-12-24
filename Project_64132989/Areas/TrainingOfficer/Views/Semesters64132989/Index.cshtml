@@ -1,70 +1,157 @@
 ﻿@model IEnumerable<Project_64132989.Models.Data.Semester>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Danh sách học kỳ";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="@Url.Action("Index", "Semesters64132989")">
+            <i class="bi bi-list-task me-2"></i>
+            <span>Danh sách học kỳ</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="@Url.Action("ActiveSemester", "Semesters64132989")">
+            <i class="bi bi-check me-2"></i>
+            <span>Học kỳ đang hoạt động</span>
+        </a>
+    </li>
+</ul>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.semester_name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.start_date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.end_date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.registration_start_date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.registration_end_date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.academic_year)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.status)
-        </th>
-        <th></th>
-    </tr>
+<h4>Danh sách học kỳ trong hệ thống</h4>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.semester_name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.start_date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.end_date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.registration_start_date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.registration_end_date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.academic_year)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.status)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.semester_id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.semester_id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.semester_id })
-        </td>
-    </tr>
-}
+<div id="toolbar">
+    <a href="@Url.Action("Create", "Semesters64132989")" class="btn custom-btn me-2">
+        <i class="bi bi-plus-circle me-2"></i>Thêm học kỳ mới
+    </a>
+</div>
 
+<table id="semestersTable" class="table-responsive"
+       data-toolbar="#toolbar"
+       data-search="true"
+       data-show-refresh="true"
+       data-show-toggle="true"
+       data-show-fullscreen="true"
+       data-show-columns="true"
+       data-show-export="true"
+       data-detail-view="false"
+       data-pagination="true"
+       data-side-pagination="server"
+       data-url="@Url.Action("GetSemesterList", "Semesters64132989")"
+       data-method="post"
+       data-sort-name="semesterId"
+       data-sort-order="asc"
+       data-page-list="[10, 25, 50, 100]">
+    <thead>
+        <tr>
+            <th data-field="semesterId" data-sortable="true">@Html.DisplayNameFor(model => model.semester_id)</th>
+            <th data-field="semesterName" data-sortable="true">@Html.DisplayNameFor(model => model.semester_name)</th>
+            <th data-field="status" data-formatter="statusFormatter" data-sortable="true">@Html.DisplayNameFor(model => model.status)</th>
+            <th data-field="actions" data-formatter="actionFormatter" data-class="p-0" data-align="center"></th>
+        </tr>
+    </thead>
 </table>
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table-locale-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var $table = $('#semestersTable');
+
+        function statusFormatter(value) {
+            if (value === 1) return '<span class="badge bg-success">Hoạt động</span>';
+            return '<span class="badge bg-secondary">Không hoạt động</span>';
+        }
+
+        function actionFormatter(value, row) {
+            return [
+                '<div class="dropdown p-2">',
+                '<button class="btn custom-btn btn-sm" type="button" onclick="toggleActionMenu(this, \'' + row.semesterId + '\')">',
+                '<i class="bi bi-three-dots-vertical"></i>',
+                '</button>',
+                '</div>'
+            ].join('');
+        }
+
+        function debounce(func, delay) {
+            let timer;
+            return function (...args) {
+                const context = this;
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        function toggleActionMenu(button, semesterId) {
+            const existingDropdown = document.querySelector('.custom-action-dropdown');
+
+            if (existingDropdown) {
+                if (existingDropdown.dataset.semesterId === semesterId) {
+                    existingDropdown.classList.add('fade-out');
+                    setTimeout(() => existingDropdown.remove(), 200);
+                    return;
+                }
+                existingDropdown.remove();
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu custom-action-dropdown show fade-in';
+            dropdown.dataset.semesterId = semesterId;
+            dropdown.style.position = 'absolute';
+            dropdown.style.zIndex = '1100';
+            dropdown.innerHTML = `
+                <a class="dropdown-item" href="@Url.Action("Details", "Semesters64132989")/${semesterId}">
+                    <i class="bi bi-info-circle me-2"></i>Chi tiết
+                </a>
+                <a class="dropdown-item" href="@Url.Action("Edit", "Semesters64132989")/${semesterId}">
+                    <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+                </a>
+            `;
+
+            document.body.appendChild(dropdown);
+
+            Popper.createPopper(button, dropdown, {
+                placement: 'bottom-end',
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, 8],
+                        },
+                    },
+                ],
+            });
+
+            const closeDropdown = (e) => {
+                if (!dropdown.contains(e.target) && e.target !== button) {
+                    dropdown.classList.add('fade-out');
+                    setTimeout(() => dropdown.remove(), 200);
+                    document.removeEventListener('click', closeDropdown);
+                }
+            };
+
+            setTimeout(() => {
+                document.addEventListener('click', closeDropdown);
+            }, 0);
+        }
+
+        function initTable() {
+            $table.bootstrapTable('destroy').bootstrapTable({
+                locale: "vi-VN"
+            });
+        }
+
+        $(function () {
+            initTable();
+            $('#locale').change(initTable);
+        });
+    </script>
+}

@@ -161,6 +161,13 @@
                                     Quản trị viên
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Departments64132989" ? "active" : "")"
+                                   href="@Url.Action("Index", "Departments64132989")" title="Trang quản lý nhân viên">
+                                    <i class="bi bi-building fs-5"></i>
+                                    Phòng ban
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>

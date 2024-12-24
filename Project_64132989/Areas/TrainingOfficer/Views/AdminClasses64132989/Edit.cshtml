@@ -1,70 +1,134 @@
 ﻿@model Project_64132989.Models.Data.AdminClass
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Chỉnh sửa lớp hành chính";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Edit</h2>
+<p>
+    @Html.ActionLink(" ", "Index", null, new { @class = "btn custom-btn bi bi-arrow-left fs-6" })
+</p>
 
-@using (Html.BeginForm())
+<h3 class="mb-4 mt-4">@ViewBag.Title</h3>
+
+@using (Html.BeginForm("Edit", "AdminClasses64132989", FormMethod.Post, new { @class = "row g-3 needs-validation" }))
 {
     @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>AdminClass</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.class_id)
+    @Html.HiddenFor(model => model.class_id)
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.class_name, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.class_name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.class_name, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.class_id, "Mã lớp", new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.class_id, new { @class = "form-control", @readonly = "readonly" })
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.department_id, "department_id", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("department_id", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.department_id, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.class_name, "Tên lớp", new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.class_name, new { @class = "form-control", required = "required", placeholder = "Nhập tên lớp" })
+        @Html.ValidationMessageFor(m => m.class_name, "", new { @class = "text-danger" })
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.advisor_teacher_id, "advisor_teacher_id", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("advisor_teacher_id", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.advisor_teacher_id, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.department_id, "Khoa", new { @class = "form-label" })
+        @Html.DropDownList("department_id", null, "-- Chọn khoa --", new { @class = "form-select", required = "required" })
+        @Html.ValidationMessageFor(m => m.department_id, "", new { @class = "text-danger" })
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.created_date, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.created_date, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.created_date, "", new { @class = "text-danger" })
-            </div>
+    <div class="col-md-6">
+        <label class="form-label">Giáo viên cố vấn</label>
+        <div class="input-group">
+            @Html.HiddenFor(m => m.advisor_teacher_id)
+            <input type="text" id="selectedTeacherName" class="form-control" placeholder="Chọn giáo viên cố vấn" readonly required>
+            <button type="button" class="btn btn-outline-secondary" onclick="openTeacherModal()">
+                <i class="bi bi-search"></i>
+            </button>
         </div>
+        <div class="invalid-feedback">Vui lòng chọn giáo viên cố vấn</div>
+    </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.status, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.status, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.status, "", new { @class = "text-danger" })
-            </div>
-        </div>
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.status, "Trạng thái", new { @class = "form-label" })
+        @Html.DropDownListFor(m => m.status, new[] {
+            new SelectListItem { Value = "1", Text = "Hoạt động" },
+            new SelectListItem { Value = "0", Text = "Không hoạt động" }
+        }, new { @class = "form-select" })
+    </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
+    @Html.HiddenFor(m => m.created_date)
+
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save me-2"></i>Lưu thay đổi
+        </button>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
+<div class="modal fade" id="teacherModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chọn giáo viên cố vấn</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table id="teachersTable" data-toggle="table" data-pagination="true" data-search="true"
+                       data-side-pagination="server" data-page-list="[5, 10, 25]"
+                       data-url="@Url.Action("GetTeacherList", "GetUserAPI64132989", new { area = "TrainingOfficer" })">
+                    <thead>
+                        <tr>
+                            <th data-field="userId" data-sortable="true">Mã số</th>
+                            <th data-field="fullName" data-sortable="true">Họ và tên</th>
+                            <th data-field="email" data-sortable="true">Email</th>
+                            <th data-field="phoneNumber">Số điện thoại</th>
+                            <th data-field="gender">Giới tính</th>
+                            <th data-field="operate" data-formatter="actionFormatter" data-align="center" data-width="100"></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/locale/bootstrap-table-vi-VN.min.js"></script>
+
+    <script>
+        function actionFormatter(value, row) {
+            return `<button type="button" class="btn btn-sm btn-primary" onclick="selectTeacher('${row.userId}', '${row.fullName}')">
+                        <i class="bi bi-check2"></i> Chọn</button>`;
+        }
+
+        function selectTeacher(userId, fullName) {
+            $('#advisor_teacher_id').val(userId);
+            $('#selectedTeacherName').val(userId);
+            $('#teacherModal').modal('hide');
+        }
+
+        function openTeacherModal() {
+            $('#teacherModal').modal('show');
+            $('#teachersTable').bootstrapTable('refresh');
+        }
+
+        $(function () {
+            $('#teachersTable').bootstrapTable({
+                locale: 'vi-VN',
+                pageSize: 5
+            });
+
+            // Hiển thị tên giáo viên hiện tại
+            if ($('#advisor_teacher_id').val()) {
+                $('#selectedTeacherName').val($('#advisor_teacher_id').val());
+            }
+
+            $('.needs-validation').on('submit', function (e) {
+                if (!this.checkValidity() || !$('#advisor_teacher_id').val()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                this.classList.add('was-validated');
+            });
+        });
+    </script>
+}

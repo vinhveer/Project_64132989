@@ -30,7 +30,6 @@
                 <div class="mb-3">
                     <img src="@(Session["Avatar"] != null ? Session["Avatar"].ToString() : "/Assets/anh.jpg")"
                          alt="User Avatar" class="user-avatar mb-2" style="width: 100px; height: 100px;">
-                    <h5 class="mt-4">Nhân viên</h5>
                     <h4>@Session["UserFullName"]</h4>
                     <p>@Session["UserEmail"]</p>
                 </div>
@@ -94,20 +93,18 @@
         </ul>
     </div>
 
-
-
-    <header class="navbar sticky-top bg-body flex-md-nowrap p-0 shadow-sm">
+    <header id="header" class="navbar sticky-top bg-body flex-md-nowrap p-0 shadow-sm">
         <a class="navbar-brand col-md-3 col-lg-3 me-0 px-3 fs-6 d-flex align-items-center text-decoration-none"
            href="@Url.Action("Index", "Home64132989")">
             <img src="~/Assets/ntu.svg" alt="Logo" style="height: 2.5em; padding: 0">
-            <h6 class="m-0 ms-2 fw-semibold fs-6">| NTU-UMS</h6>
+            <h6 class="m-0 ms-2 fw-semibold fs-6">| NTU-CMS</h6>
         </a>
-        <ul class="navbar-nav flex-row align-items-center">
-            @if (User.Identity.IsAuthenticated)
-            {
+        @if (User.Identity.IsAuthenticated)
+        {
+            <ul class="navbar-nav flex-row align-items-center">
                 <li class="nav-item">
                     <a href="@Url.Action("Direct", "Login64132989", new { area = "" })" class="btn btn-outline-secondary custom-btn me-3">
-                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                        <i class="bi bi-speedometer2 me-2"></i> Bảng điều khiển
                     </a>
                 </li>
                 <li class="nav-item">
@@ -116,24 +113,36 @@
                              alt="User Avatar" class="user-avatar me-2">
                     </a>
                 </li>
-            }
-            else
-            {
-                <li class="nav-item">
-                    <a href="@Url.Action("Index", "Login64132989", new { area = "" })" class="btn btn-outline-primary custom-btn me-2">
+            </ul>
+        }
+        else
+        {
+            <ul class="nav nav-underline">
+                <li class="nav-item m-2 d-none d-md-block">
+                    <a class="nav-link" href="#home">Trang chủ</a>
+                </li>
+                <li class="nav-item m-2 d-none d-md-block">
+                    <a class="nav-link" href="#features">Tính năng</a>
+                </li>
+                <li class="nav-item m-2 d-none d-md-block">
+                    <a class="nav-link" href="#major">Chương trình đào tạo</a>
+                </li>
+                <li class="nav-item m-2">
+                    <a href="@Url.Action("Index", "Login64132989", new { area = "" })" class="btn custom-btn me-2">
                         <i class="bi bi-box-arrow-in-right me-2"></i> Đăng nhập
                     </a>
                 </li>
-            }
-        </ul>
+            </ul>
+        }
+
     </header>
 
     <div class="pt-5">
         @RenderBody()
     </div>
 
-    <footer class="container-fluid ps-5 pe-5 mt-4 bg-body-tertiary text-body">
-        <p class="m-0 pt-4 pb-4">&copy; @DateTime.Now.Year - NTU_UMS</p>
+    <footer class="container-fluid ps-5 pe-5 bg-body-tertiary text-body">
+        <p class="m-0 pt-4 pb-4">&copy; @DateTime.Now.Year - NTU-CMS</p>
     </footer>
 
 

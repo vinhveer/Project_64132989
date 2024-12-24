@@ -1,75 +1,98 @@
 ﻿@model Project_64132989.Models.Data.Semester
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết học kỳ";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
-
-<div>
-    <h4>Semester</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.semester_name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.semester_name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.start_date)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.start_date)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.end_date)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.end_date)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.registration_start_date)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.registration_start_date)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.registration_end_date)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.registration_end_date)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.academic_year)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.academic_year)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.status)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.status)
-        </dd>
-
-    </dl>
-</div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.semester_id }) |
-    @Html.ActionLink("Back to List", "Index")
+    <a href="@Url.Action("Index")" class="btn custom-btn">
+        <i class="bi bi-arrow-left fs-6"></i>
+    </a>
 </p>
+
+<h3 class="mb-4 mt-4">Chi tiết học kỳ #@Html.DisplayFor(model => model.semester_id)</h3>
+
+<div class="row g-3">
+    <!-- Semester Name -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Tên học kỳ</h6>
+                <p class="card-text">@Html.DisplayFor(model => model.semester_name)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Dates -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Ngày bắt đầu đăng ký</h6>
+                <p class="card-text">
+                    @(Model.registration_start_date.HasValue ? Model.registration_start_date.Value.ToString("dd/MM/yyyy") : "Chưa thiết lập")
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Ngày kết thúc đăng ký</h6>
+                <p class="card-text">
+                    @(Model.registration_end_date.HasValue ? Model.registration_end_date.Value.ToString("dd/MM/yyyy") : "Chưa thiết lập")
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Registration Dates -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Ngày bắt đầu đăng ký môn học</h6>
+                <p class="card-text">
+                    @(Model.course_registration_start.HasValue ? Model.course_registration_start.Value.ToString("dd/MM/yyyy") : "Chưa thiết lập")
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Ngày kết thúc đăng ký môn học</h6>
+                <p class="card-text">
+                    @(Model.course_registration_end.HasValue ? Model.course_registration_end.Value.ToString("dd/MM/yyyy") : "Chưa thiết lập")
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Trạng thái</h6>
+                <p class="card-text">
+                    @if (Model.status == 1)
+                    {
+                        <span class="badge bg-success">Hoạt động</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Không hoạt động</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="col-12 mt-3">
+        <a href="@Url.Action("Edit", new { id = Model.semester_id })" class="btn btn-primary">
+            <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+        </a>
+    </div>
+</div>

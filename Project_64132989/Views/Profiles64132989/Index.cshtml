@@ -1,7 +1,7 @@
 ﻿@model Project_64132989.Models.Data.Profile
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Thông tin cá nhân";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var userId = Html.DisplayFor(model => model.user_id);
 }
@@ -51,7 +51,7 @@
             @Html.DisplayNameFor(model => model.gender)
         </dt>
         <dd class="col-sm-9">
-            @(Model.gender == 1 ? "Nam" : "Nữ")
+            @(Model.gender == 0 ? "Nam" : "Nữ")
         </dd>
 
         <dt class="col-sm-3">

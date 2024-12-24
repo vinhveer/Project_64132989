@@ -21,6 +21,7 @@ namespace Project_64132989.Models.Data
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<Semester> Semesters { get; set; }
         public virtual DbSet<StudentCourseRegistration> StudentCourseRegistrations { get; set; }
+        public virtual DbSet<StudentLearningPlan> StudentLearningPlans { get; set; }
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<Teacher> Teachers { get; set; }
@@ -83,6 +84,11 @@ namespace Project_64132989.Models.Data
                 .HasForeignKey(e => e.prerequisite_course_id);
 
             modelBuilder.Entity<Cours>()
+                .HasMany(e => e.StudentLearningPlans)
+                .WithRequired(e => e.Cours)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Cours>()
                 .HasMany(e => e.TrainingProgramCourses)
                 .WithRequired(e => e.Cours)
                 .WillCascadeOnDelete(false);
@@ -128,6 +134,11 @@ namespace Project_64132989.Models.Data
                 .WithRequired(e => e.Semester)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<Semester>()
+                .HasMany(e => e.StudentLearningPlans)
+                .WithRequired(e => e.Semester)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<StudentCourseRegistration>()
                 .Property(e => e.student_id)
                 .IsUnicode(false);
@@ -136,6 +147,14 @@ namespace Project_64132989.Models.Data
                 .HasMany(e => e.Grades)
                 .WithRequired(e => e.StudentCourseRegistration)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<StudentLearningPlan>()
+                .Property(e => e.course_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<StudentLearningPlan>()
+                .Property(e => e.student_id)
+                .IsUnicode(false);
 
             modelBuilder.Entity<Student>()
                 .Property(e => e.user_id)
@@ -151,6 +170,12 @@ namespace Project_64132989.Models.Data
 
             modelBuilder.Entity<Student>()
                 .HasMany(e => e.StudentCourseRegistrations)
+                .WithRequired(e => e.Student)
+                .HasForeignKey(e => e.student_id)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Student>()
+                .HasMany(e => e.StudentLearningPlans)
                 .WithRequired(e => e.Student)
                 .HasForeignKey(e => e.student_id)
                 .WillCascadeOnDelete(false);

@@ -25,6 +25,7 @@ namespace Project_64132989.Areas.Admin.Controllers
         // GET: User/Create
         public ActionResult Create()
         {
+            ViewBag.DepartmentList = new SelectList(_context.Departments, "department_id", "department_name");
             return View();
         }
 
@@ -59,6 +60,12 @@ namespace Project_64132989.Areas.Admin.Controllers
                         address = addNewUserModel.address
                     };
 
+                    Teacher teacher = new Teacher
+                    {
+                        user_id = addNewUserModel.user_id,
+                        department_id = addNewUserModel.department_id
+                    };
+
                     // Xử lý upload file avatar
                     if (avatarFile != null && avatarFile.ContentLength > 0)
                     {
@@ -71,6 +78,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                     // Lưu vào DB
                     _context.Users.Add(user);
                     _context.Profiles.Add(profile);
+                    _context.Teachers.Add(teacher);
                     _context.SaveChanges();
 
                     return RedirectToAction("Index");
@@ -90,6 +98,7 @@ namespace Project_64132989.Areas.Admin.Controllers
             var query = _context.Users
                 .Where(u => u.user_type == 2)
                 .Include(u => u.Profile)
+                .Include(u => u.Teacher)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
@@ -115,7 +124,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                     query = order == "asc" ? query.OrderBy(u => u.email) : query.OrderByDescending(u => u.email);
             }
 
-            var students = query
+            var teachers = query
                 .Skip(offset)
                 .Take(limit)
                 .Select(u => new
@@ -123,16 +132,16 @@ namespace Project_64132989.Areas.Admin.Controllers
                     userId = u.user_id,
                     fullName = u.Profile.first_name + " " + u.Profile.last_name,
                     email = u.email,
-                    phoneNumber = u.Profile.phone_number,
+                    department_id = u.Teacher.department_id == null ? "Không có dữ liệu" : u.Teacher.department_id,
                     dateOfBirth = u.Profile.date_of_birth,
-                    gender = u.Profile.gender == 1 ? "Nữ" : (u.Profile.gender == 0 ? "Nam" : "Khác")
+                    gender = u.Profile.gender == 1 ? "Nam" : (u.Profile.gender == 0 ? "Nữ" : "Khác")
                 })
                 .ToList();
 
             return Json(new
             {
                 total = total,
-                rows = students
+                rows = teachers
             }, JsonRequestBehavior.AllowGet);
         }
 
@@ -152,6 +161,7 @@ namespace Project_64132989.Areas.Admin.Controllers
 
                 if (user.Profile != null)
                 {
+                    _context.Teachers.Remove(user.Teacher);
                     _context.Profiles.Remove(user.Profile);
                 }
 
@@ -159,6 +169,53 @@ namespace Project_64132989.Areas.Admin.Controllers
                 _context.SaveChanges();
 
                 return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Có lỗi xảy ra: " + ex.Message
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult DeleteMultiple(string[] userIds)
+        {
+            try
+            {
+                if (userIds == null || userIds.Length == 0)
+                {
+                    return Json(new { success = false, message = "Không có sinh viên nào được chọn" });
+                }
+
+                var usersToDelete = _context.Users
+                    .Include(u => u.Profile)
+                    .Where(u => userIds.Contains(u.user_id))
+                    .ToList();
+
+                if (!usersToDelete.Any())
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sinh viên" });
+                }
+
+                // Remove associated profiles first
+                foreach (var user in usersToDelete.Where(u => u.Profile != null))
+                {
+                    _context.Teachers.Remove(user.Teacher);
+                    _context.Profiles.Remove(user.Profile);
+                }
+
+                // Remove users
+                _context.Users.RemoveRange(usersToDelete);
+                _context.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Đã xóa thành công {usersToDelete.Count} sinh viên"
+                });
             }
             catch (Exception ex)
             {
@@ -218,11 +275,12 @@ namespace Project_64132989.Areas.Admin.Controllers
                         var password = worksheet.Cells[row, 3]?.Text?.Trim();
                         var firstName = worksheet.Cells[row, 4]?.Text?.Trim();
                         var lastName = worksheet.Cells[row, 5]?.Text?.Trim();
+                        var departmentId = worksheet.Cells[row, 6]?.Text?.Trim();
 
                         // Kiểm tra các trường bắt buộc
                         if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(email) ||
                             string.IsNullOrEmpty(password) || string.IsNullOrEmpty(firstName) ||
-                            string.IsNullOrEmpty(lastName))
+                            string.IsNullOrEmpty(lastName) || string.IsNullOrEmpty(departmentId))
                         {
                             ViewBag.ErrorMessage = $"Dòng {row}: Thiếu thông tin bắt buộc. Vui lòng kiểm tra lại file.";
                             return View();
@@ -236,10 +294,10 @@ namespace Project_64132989.Areas.Admin.Controllers
                         }
 
                         // Đọc các trường không bắt buộc
-                        var dobText = worksheet.Cells[row, 6]?.Text?.Trim();
-                        var genderText = worksheet.Cells[row, 7]?.Text?.Trim();
-                        var phoneNumber = worksheet.Cells[row, 8]?.Text?.Trim();
-                        var address = worksheet.Cells[row, 9]?.Text?.Trim();
+                        var dobText = worksheet.Cells[row, 7]?.Text?.Trim();
+                        var genderText = worksheet.Cells[row, 8]?.Text?.Trim();
+                        var phoneNumber = worksheet.Cells[row, 9]?.Text?.Trim();
+                        var address = worksheet.Cells[row, 10]?.Text?.Trim();
 
                         // Tạo User
                         var user = new User
@@ -263,9 +321,17 @@ namespace Project_64132989.Areas.Admin.Controllers
                             address = address
                         };
 
+                        // Tạo Teacher
+                        var teacher = new Teacher
+                        {
+                            user_id = userId,
+                            department_id = departmentId
+                        };
+
                         // Thêm dữ liệu vào các bảng
                         _context.Users.Add(user);
                         _context.Profiles.Add(profile);
+                        _context.Teachers.Add(teacher);
                     }
 
                     // Lưu thay đổi vào cơ sở dữ liệu
@@ -295,10 +361,11 @@ namespace Project_64132989.Areas.Admin.Controllers
                 worksheet.Cells[1, 3].Value = "Password";
                 worksheet.Cells[1, 4].Value = "First Name";
                 worksheet.Cells[1, 5].Value = "Last Name";
-                worksheet.Cells[1, 6].Value = "Date of Birth";
-                worksheet.Cells[1, 7].Value = "Gender (1=Nam, 0=Nữ)";
-                worksheet.Cells[1, 8].Value = "Phone Number";
-                worksheet.Cells[1, 9].Value = "Address";
+                worksheet.Cells[1, 6].Value = "Department ID";
+                worksheet.Cells[1, 7].Value = "Date of Birth";
+                worksheet.Cells[1, 8].Value = "Gender (1=Nam, 0=Nữ)";
+                worksheet.Cells[1, 9].Value = "Phone Number";
+                worksheet.Cells[1, 10].Value = "Address";
 
                 // Tạo file và trả về
                 var fileBytes = package.GetAsByteArray();
@@ -315,12 +382,27 @@ namespace Project_64132989.Areas.Admin.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Profile profile = _context.Profiles.Find(id);
+            Teacher teacher = _context.Teachers.Find(id);
 
-            if (profile == null)
+            AddNewUserModel addNewUserModel = new AddNewUserModel
+            {
+                user_id = profile.user_id,
+                first_name = profile.first_name,
+                last_name = profile.last_name,
+                date_of_birth = profile.date_of_birth,
+                gender = profile.gender,
+                phone_number = profile.phone_number,
+                address = profile.address,
+                avatar_path = profile.avatar_path,
+                email = profile.User.email,
+                department_name = teacher.Department.department_name
+            };
+
+            if (profile == null || teacher == null)
             {
                 return HttpNotFound();
             }
-            return View(profile);
+            return View(addNewUserModel);
         }
 
         // GET: Admin/Profiles/Edit/5
@@ -330,21 +412,57 @@ namespace Project_64132989.Areas.Admin.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
             Profile profile = _context.Profiles.Find(id);
-            if (profile == null)
+            Teacher teacher = _context.Teachers.Find(id);
+
+            // Kiểm tra null cho cả profile và teacher
+            if (profile == null || teacher == null)
             {
-                return HttpNotFound();
+                return Content("không tìm thấy {id}");
             }
+
+            // Lấy thông tin department
+            var department = _context.Departments.Find(teacher.department_id);
+            ViewBag.DepartmentName = department?.department_name;
+
+            AddNewUserModel addNewUserModel = new AddNewUserModel
+            {
+                user_id = profile.user_id,
+                first_name = profile.first_name,
+                last_name = profile.last_name,
+                date_of_birth = profile.date_of_birth,
+                gender = profile.gender,
+                phone_number = profile.phone_number,
+                address = profile.address,
+                avatar_path = profile.avatar_path,
+                department_id = teacher.department_id,
+                email = profile.User.email
+            };
+
             ViewBag.user_id = new SelectList(_context.Users, "user_id", "email", profile.user_id);
-            return View(profile);
+            ViewBag.Email = _context.Users.Find(id)?.email;
+            ViewBag.DepartmentList = new SelectList(_context.Departments, "department_id", "department_name");
+
+            return View(addNewUserModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "user_id,first_name,last_name,date_of_birth,gender,phone_number,address,avatar_path")] Profile profile)
+        public ActionResult Edit([Bind(Include = "user_id,first_name,last_name,date_of_birth,gender,phone_number,address,avatar_path,department_id")] AddNewUserModel addNewUserModel)
         {
             if (ModelState.IsValid)
             {
+                // Tìm profile và teacher hiện có
+                var profile = _context.Profiles.Find(addNewUserModel.user_id);
+                var teacher = _context.Teachers.Find(addNewUserModel.user_id);
+
+                if (profile == null || teacher == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Xử lý upload file avatar nếu có
                 if (Request.Files.Count > 0)
                 {
                     var avatar_file = Request.Files[0];
@@ -367,18 +485,49 @@ namespace Project_64132989.Areas.Admin.Controllers
                         string filePath = Path.Combine(uploadPath, fileName);
                         avatar_file.SaveAs(filePath);
 
-                        // Gán đường dẫn vào Profile
-                        profile.avatar_path = "/Uploads/Avatar/" + fileName;
+                        // Xóa file avatar cũ nếu tồn tại
+                        if (!string.IsNullOrEmpty(profile.avatar_path))
+                        {
+                            string oldFilePath = Server.MapPath("~" + profile.avatar_path);
+                            if (System.IO.File.Exists(oldFilePath))
+                            {
+                                System.IO.File.Delete(oldFilePath);
+                            }
+                        }
+
+                        // Cập nhật đường dẫn avatar mới
+                        addNewUserModel.avatar_path = "/Uploads/Avatar/" + fileName;
                     }
                 }
+                else
+                {
+                    // Giữ nguyên avatar cũ nếu không có file mới
+                    addNewUserModel.avatar_path = profile.avatar_path;
+                }
 
+                // Cập nhật thông tin Profile
+                profile.first_name = addNewUserModel.first_name;
+                profile.last_name = addNewUserModel.last_name;
+                profile.date_of_birth = addNewUserModel.date_of_birth;
+                profile.gender = addNewUserModel.gender;
+                profile.phone_number = addNewUserModel.phone_number;
+                profile.address = addNewUserModel.address;
+                profile.avatar_path = addNewUserModel.avatar_path;
+
+                // Cập nhật thông tin Teacher
+                teacher.department_id = addNewUserModel.department_id;
+
+                // Lưu thay đổi vào database
                 _context.Entry(profile).State = EntityState.Modified;
+                _context.Entry(teacher).State = EntityState.Modified;
                 _context.SaveChanges();
+
                 return RedirectToAction("Index");
             }
 
-            ViewBag.user_id = new SelectList(_context.Users, "user_id", "email", profile.user_id);
-            return View(profile);
+            // Nếu ModelState không hợp lệ, trả về view với dữ liệu hiện tại
+            ViewBag.user_id = new SelectList(_context.Users, "user_id", "email", addNewUserModel.user_id);
+            return View(addNewUserModel);
         }
 
         public ActionResult ChangePassword(string id)

@@ -1,0 +1,62 @@
+﻿@model Project_64132989.Models.Data.Department
+
+@{
+    ViewBag.Title = "Tạo phòng ban mới";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<p>
+    <a href="@Url.Action("Index")" class="btn custom-btn">
+        <i class="bi bi-arrow-left fs-6"></i>
+    </a>
+</p>
+
+<h3 class="mb-4 mt-4">Tạo phòng ban mới</h3>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@using (Html.BeginForm("Create", "Departments64132989", FormMethod.Post, new { enctype = "multipart/form-data", @class = "row g-3 needs-validation" }))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Department ID -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.department_id, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.department_id, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.department_id, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Department Name -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.department_name, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.department_name, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.department_name, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Description -->
+    <div class="col-12">
+        @Html.LabelFor(m => m.description, new { @class = "form-label" })
+        @Html.TextAreaFor(m => m.description, new { @class = "form-control", rows = 4 })
+        @Html.ValidationMessageFor(m => m.description, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Status -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.status, new { @class = "form-label" })
+        <select id="status" name="status" class="form-select form-control">
+            <option value="1">Hoạt động</option>
+            <option value="0">Không hoạt động</option>
+        </select>
+        @Html.ValidationMessageFor(m => m.status, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Submit Button -->
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">Tạo phòng ban mới</button>
+    </div>
+}

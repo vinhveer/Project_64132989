@@ -47,5 +47,21 @@ namespace Project_64132989.Areas.Admin.Data
         [StringLength(255)]
         [Display(Name = "Mật khẩu")]
         public string password { get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "Phòng ban")]
+        public string department_id { get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "Phòng ban trực thuộc")]
+        public string department_name { get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "Chương trình học")]
+        public string program_id { get; set; }
+
+        [StringLength(255)]
+        [Display(Name = "Chương trình học trực thuộc")]
+        public string program_name { get; set; }
     }
 }

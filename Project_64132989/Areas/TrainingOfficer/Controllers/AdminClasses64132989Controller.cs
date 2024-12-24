@@ -21,6 +21,110 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
             return View(adminClasses.ToList());
         }
 
+        [HttpPost]
+        public JsonResult GetAdminClassList(int offset, int limit, string search, string sort, string order)
+        {
+            try
+            {
+                if (offset < 0 || limit <= 0)
+                {
+                    return Json(new { success = false, message = "Tham số phân trang không hợp lệ" });
+                }
+
+                var query = db.AdminClasses
+                    .Include(a => a.Department)
+                    .Include(a => a.Teacher)
+                    .Include(a => a.Teacher.User)
+                    .Include(a => a.Teacher.User.Profile)
+                    .AsQueryable();
+
+                // Tìm kiếm
+                if (!string.IsNullOrEmpty(search))
+                {
+                    search = search.ToLower();
+                    query = query.Where(a =>
+                        a.class_id.ToLower().Contains(search) ||
+                        a.class_name.ToLower().Contains(search) ||
+                        (a.Department != null && a.Department.department_name.ToLower().Contains(search)) ||
+                        (a.Teacher != null && a.Teacher.User != null && a.Teacher.User.Profile != null &&
+                            (a.Teacher.User.Profile.first_name + " " + a.Teacher.User.Profile.last_name)
+                            .ToLower().Contains(search))
+                    );
+                }
+
+                // Đếm tổng số bản ghi
+                int total = query.Count();
+
+                // Sắp xếp
+                if (!string.IsNullOrEmpty(sort))
+                {
+                    switch (sort)
+                    {
+                        case "classId":
+                            query = order == "asc" ? query.OrderBy(a => a.class_id) : query.OrderByDescending(a => a.class_id);
+                            break;
+                        case "className":
+                            query = order == "asc" ? query.OrderBy(a => a.class_name) : query.OrderByDescending(a => a.class_name);
+                            break;
+                        case "departmentName":
+                            query = order == "asc"
+                                ? query.OrderBy(a => a.Department != null ? a.Department.department_name : "")
+                                : query.OrderByDescending(a => a.Department != null ? a.Department.department_name : "");
+                            break;
+                        case "advisorTeacher":
+                            query = order == "asc"
+                                ? query.OrderBy(a => a.Teacher.User.Profile.first_name)
+                                : query.OrderByDescending(a => a.Teacher.User.Profile.first_name);
+                            break;
+                        case "createdDate":
+                            query = order == "asc" ? query.OrderBy(a => a.created_date) : query.OrderByDescending(a => a.created_date);
+                            break;
+                        case "status":
+                            query = order == "asc" ? query.OrderBy(a => a.status) : query.OrderByDescending(a => a.status);
+                            break;
+                        default:
+                            query = order == "asc" ? query.OrderBy(a => a.class_id) : query.OrderByDescending(a => a.class_id);
+                            break;
+                    }
+                }
+
+                // Thực thi query và lấy dữ liệu
+                var adminClasses = query.Skip(offset).Take(limit).ToList();
+
+                // Xử lý và chuyển đổi dữ liệu sau khi đã lấy từ database
+                var classes = adminClasses.Select(a => new
+                {
+                    state = false,
+                    classId = a.class_id,
+                    className = a.class_name,
+                    departmentName = a.Department?.department_name ?? "Không có khoa",
+                    advisorTeacher = a.Teacher?.User?.Profile != null
+                        ? $"{a.Teacher.User.Profile.first_name} {a.Teacher.User.Profile.last_name}"
+                        : "Chưa phân công",
+                    createdDate = a.created_date?.ToString("dd/MM/yyyy HH:mm:ss") ?? "Chưa cập nhật",
+                    status = a.status == 1 ? "Hoạt động" : "Không hoạt động",
+                    actions = ""
+                }).ToList();
+
+                return Json(new
+                {
+                    total = total,
+                    rows = classes,
+                    success = true,
+                    currentUser = "vinhveer",
+                    currentDate = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm:ss")
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Có lỗi xảy ra khi tải dữ liệu: " + ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         // GET: TrainingOfficer/AdminClasses64132989/Details/5
         public ActionResult Details(string id)
         {
@@ -33,6 +137,8 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
             {
                 return HttpNotFound();
             }
+
+            ViewBag.TeacherName = adminClass.Teacher.User.Profile.first_name + " " + adminClass.Teacher.User.Profile.last_name;
             return View(adminClass);
         }
 
@@ -98,30 +204,64 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
             return View(adminClass);
         }
 
-        // GET: TrainingOfficer/AdminClasses64132989/Delete/5
-        public ActionResult Delete(string id)
+        [HttpPost]
+        public JsonResult Delete(string classId)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                var adminClass = db.AdminClasses.Find(classId);
+                if (adminClass == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy lớp" });
+                }
+
+                // Kiểm tra xem lớp có sinh viên không
+                if (adminClass.Students.Any())
+                {
+                    return Json(new { success = false, message = "Không thể xóa lớp đang có sinh viên" });
+                }
+
+                db.AdminClasses.Remove(adminClass);
+                db.SaveChanges();
+
+                return Json(new { success = true });
             }
-            AdminClass adminClass = db.AdminClasses.Find(id);
-            if (adminClass == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = "Có lỗi xảy ra: " + ex.Message });
             }
-            return View(adminClass);
         }
 
-        // POST: TrainingOfficer/AdminClasses64132989/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id)
+        [HttpPost]
+        public JsonResult DeleteMultiple(string[] classIds)
         {
-            AdminClass adminClass = db.AdminClasses.Find(id);
-            db.AdminClasses.Remove(adminClass);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                if (classIds == null || !classIds.Any())
+                {
+                    return Json(new { success = false, message = "Không có lớp nào được chọn" });
+                }
+
+                var classesToDelete = db.AdminClasses.Where(c => classIds.Contains(c.class_id)).ToList();
+
+                // Kiểm tra xem có lớp nào đang có sinh viên không
+                foreach (var adminClass in classesToDelete)
+                {
+                    if (adminClass.Students.Any())
+                    {
+                        return Json(new { success = false, message = $"Lớp {adminClass.class_name} đang có sinh viên, không thể xóa" });
+                    }
+                }
+
+                db.AdminClasses.RemoveRange(classesToDelete);
+                db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Có lỗi xảy ra: " + ex.Message });
+            }
         }
 
         protected override void Dispose(bool disposing)

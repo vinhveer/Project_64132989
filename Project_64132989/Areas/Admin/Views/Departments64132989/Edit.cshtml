@@ -1,0 +1,56 @@
+﻿@model Project_64132989.Models.Data.Department
+
+@{
+    ViewBag.Title = "Chỉnh sửa phòng ban";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<p>
+    <a href="@Url.Action("Index")" class="btn custom-btn">
+        <i class="bi bi-arrow-left fs-6"></i> Quay lại
+    </a>
+</p>
+
+<h3 class="mb-4 mt-4">Chỉnh sửa phòng ban</h3>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@using (Html.BeginForm("Edit", "Department", FormMethod.Post, new { @class = "row g-3 needs-validation" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.department_id)
+
+    <!-- Department Name -->
+    <div class="col-12">
+        @Html.LabelFor(m => m.department_name, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.department_name, new { @class = "form-control", required = "required" })
+        @Html.ValidationMessageFor(m => m.department_name, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Description -->
+    <div class="col-12">
+        @Html.LabelFor(m => m.description, new { @class = "form-label" })
+        @Html.TextAreaFor(m => m.description, new { @class = "form-control", rows = 4 })
+        @Html.ValidationMessageFor(m => m.description, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Status -->
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.status, new { @class = "form-label" })
+        <select id="status" name="status" class="form-select form-control">
+            <option value="1" @(Model.status == 1 ? "selected" : "")>Hoạt động</option>
+            <option value="0" @(Model.status == 0 ? "selected" : "")>Không hoạt động</option>
+        </select>
+        @Html.ValidationMessageFor(m => m.status, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Submit Button -->
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+    </div>
+}

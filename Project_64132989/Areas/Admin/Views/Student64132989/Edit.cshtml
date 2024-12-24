@@ -1,9 +1,9 @@
-﻿@model Project_64132989.Models.Data.Profile
+﻿@model Project_64132989.Areas.Admin.Data.AddNewUserModel
 
 @{
     ViewBag.Title = "Chỉnh sửa thông tin sinh viên";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-    var userId = Html.DisplayFor(model => model.user_id);
+    var userId = Model.user_id;
 }
 
 <p>
@@ -22,7 +22,7 @@
         <div class="col-12 col-md-10 mt-3 mt-md-0 d-flex align-items-md-center">
             <div class="text-center text-md-start w-100">
                 <h3 class="mb-1">@Html.DisplayFor(model => model.last_name) @Html.DisplayFor(model => model.first_name)</h3>
-                <h6 class="text-muted">@Html.DisplayFor(model => model.User.email)</h6>
+                <h6 class="text-muted">@Html.DisplayFor(model => model.email)</h6>
             </div>
         </div>
     </div>
@@ -103,6 +103,17 @@
         @Html.ValidationMessageFor(m => m.address, "", new { @class = "text-danger" })
     </div>
 
+    <div class="mb-3">
+        <label class="form-label">Chương trình đào tạo</label>
+        <div class="input-group">
+            @Html.HiddenFor(m => m.program_id)
+            <input type="text" value="@Model.program_name" id="selectedProgramName" class="form-control" placeholder="Chọn chương trình đào tạo" readonly required>
+            <button type="button" class="btn btn-outline-secondary" onclick="$('#programModal').modal('show')">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+
     <!-- Avatar Upload -->
     <div class="mb-3">
         @Html.Label("Ảnh đại diện (Tải lên để thay đổi)", new { @class = "form-label" })
@@ -114,4 +125,66 @@
     <div class="mb-3">
         <button type="submit" class="btn btn-primary">Lưu</button>
     </div>
+}
+
+<div class="modal fade" id="programModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chọn chương trình đào tạo cần cập nhật</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table id="programsTable" data-toggle="table" data-pagination="true" data-search="true"
+                       data-side-pagination="server" data-page-list="[5, 10, 25]"
+                       data-url="@Url.Action("GetTrainingProgramList", "Student64132989", new { area = "Admin" })">
+                    <thead>
+                        <tr>
+                            <th data-field="programId" data-sortable="true">Mã CTĐT</th>
+                            <th data-field="programName" data-sortable="true">Tên CTĐT</th>
+                            <th data-field="departmentName" data-sortable="true">Khoa</th>
+                            <th data-field="totalCredits" data-sortable="true">Tổng tín chỉ</th>
+                            <th data-field="version" data-sortable="true">Phiên bản</th>
+                            <th data-field="status" data-sortable="true">Trạng thái</th>
+                            <th data-field="operate" data-formatter="actionFormatter" data-align="center" data-width="100"></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/locale/bootstrap-table-vi-VN.min.js"></script>
+
+    <script>
+        function actionFormatter(value, row) {
+            return `<button type="button" class="btn btn-primary d-flex" onclick="selectTeacher('${row.programId}', '${row.programName}')">
+                                <i class="bi bi-check2 me-2"></i> Chọn</button>`;
+        }
+
+        function selectTeacher(programId, programName) {
+            $('#program_id').val(programId);
+            $('#selectedProgramName').val(programName);
+            $('#programModal').modal('hide');
+        }
+
+        $(function () {
+            $('#programsTable').bootstrapTable({
+                locale: 'vi-VN',
+                pageSize: 5
+            });
+
+            $('.needs-validation').on('submit', function (e) {
+                if (!this.checkValidity() || !$('#program_id').val()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                this.classList.add('was-validated');
+            });
+        });
+    </script>
 }

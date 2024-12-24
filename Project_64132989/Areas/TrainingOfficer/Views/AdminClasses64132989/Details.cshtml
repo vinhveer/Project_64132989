@@ -1,59 +1,66 @@
 ﻿@model Project_64132989.Models.Data.AdminClass
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Chi tiết lớp hành chính";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
-
-<div>
-    <h4>AdminClass</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Department.department_name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Department.department_name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Teacher.department_id)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Teacher.department_id)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.class_name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.class_name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.created_date)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.created_date)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.status)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.status)
-        </dd>
-
-    </dl>
-</div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.class_id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink(" ", "Index", null, new { @class = "btn custom-btn bi bi-arrow-left fs-6" })
 </p>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">@ViewBag.Title</h5>
+        <div>
+            @Html.ActionLink("Chỉnh sửa", "Edit", new { id = Model.class_id }, new { @class = "btn btn-primary" })
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Mã lớp</label>
+                    <p class="form-control-plaintext">@Model.class_id</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tên lớp</label>
+                    <p class="form-control-plaintext">@Model.class_name</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Khoa</label>
+                    <p class="form-control-plaintext">@Model.Department.department_name</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Giáo viên cố vấn</label>
+                    <p class="form-control-plaintext">@ViewBag.TeacherName</p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Trạng thái</label>
+                    <p class="form-control-plaintext">
+                        @if (Model.status == 1)
+                        {
+                            <span class="badge bg-success">Hoạt động</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Không hoạt động</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

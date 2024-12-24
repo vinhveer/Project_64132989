@@ -109,6 +109,15 @@
         <input type="file" name="avatarFile" id="avatarFile" class="form-control" accept="image/*" />
     </div>
 
+    <div class="col-12">
+        @Html.LabelFor(m => m.department_id, "Phòng ban", new { @class = "form-label" })
+        @Html.DropDownList("department_id",
+            (SelectList)ViewBag.DepartmentList,
+            "-- Chọn phòng ban --",
+            new { @class = "form-select", required = "required" })
+        @Html.ValidationMessageFor(m => m.department_id, "", new { @class = "text-danger" })
+    </div>
+
     <!-- Submit Button -->
     <div class="col-12 mt-3">
         <button type="submit" class="btn btn-primary">Tạo giảng viên mới</button>

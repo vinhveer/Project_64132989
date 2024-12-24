@@ -1,49 +1,561 @@
 ﻿@{
-    ViewBag.Title = "Trang chủ";
+    ViewBag.Title = "Trang chủ hệ thống";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Features Section -->
-<section id="features" class="py-5">
-    <div class="container text-center">
-        <h2 class="fw-bold mb-4">Our Features</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body">
-                        <i class="bi bi-lightning-charge-fill fs-1 text-primary"></i>
-                        <h5 class="card-title mt-3">Fast Performance</h5>
-                        <p class="card-text">Experience blazing fast load times and responsive design.</p>
+<div data-bs-spy="scroll" data-bs-target="#header">
+    <!-- Intro Section -->
+    <section id="home" class="py-5 bg-body-tertiary">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="fw-bold mb-4">Chào mừng đến với NTU-CMS</h2>
+                    <p class="lead mb-4">Hệ thống quản lý học phần hiện đại của Trường Đại học Nha Trang</p>
+                    <div class="d-flex gap-3 mb-4">
+                        <div class="me-4">
+                            <i class="bi bi-mortarboard-fill fs-1 text-primary"></i>
+                            <h4 class="mt-2">50+</h4>
+                            <p>Ngành đào tạo</p>
+                        </div>
+                        <div>
+                            <i class="bi bi-people-fill fs-1 text-primary"></i>
+                            <h4 class="mt-2">15000+</h4>
+                            <p>Sinh viên</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body">
-                        <i class="bi bi-shield-lock-fill fs-1 text-primary"></i>
-                        <h5 class="card-title mt-3">Secure Platform</h5>
-                        <p class="card-text">Your data is safe with our industry-leading security measures.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body">
-                        <i class="bi bi-people-fill fs-1 text-primary"></i>
-                        <h5 class="card-title mt-3">User Friendly</h5>
-                        <p class="card-text">Intuitive and easy-to-use interface for everyone.</p>
+                <div class="col-lg-6">
+                    <div class="ratio ratio-16x9">
+                        <iframe src="https://www.youtube.com/embed/CuCbFXgOEwk?si=qZTOhWfFyzujVSPL"
+                                title="YouTube video player"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                referrerpolicy="strict-origin-when-cross-origin"
+                                allowfullscreen>
+                        </iframe>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Call to Action Section -->
-<div class="bg-body-tetiary py-5">
-    <div class="container text-center">
-        <h2 class="fw-bold">Ready to get started?</h2>
-        <p class="lead">Sign up today and take the first step toward success.</p>
-        <a href="#" class="btn btn-primary btn-lg">Get Started</a>
+    <!-- Carousel Section -->
+    <div id="carouselExampleIndicators" class="carousel slide">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="~/Assets/su-menh-tam-nhin-ntu-241107161746 (1).jpg" class="d-block w-100" alt="Sứ mệnh tầm nhìn NTU">
+            </div>
+            <div class="carousel-item">
+                <img src="~/Assets/mfst-2025-the-5-international-symposium-on-marine-&-fisheries-science-and-technology-241219081233.png" class="d-block w-100" alt="MFST 2025">
+            </div>
+            <div class="carousel-item">
+                <img src="~/Assets/chuan-5-sao.png" class="d-block w-100" alt="Chuẩn 5 sao">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
+
+    <!-- Features Section -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-speedometer2 fs-1 text-primary"></i>
+                            <h5 class="card-title mt-3">Hiệu suất cao</h5>
+                            <p class="card-text">Tốc độ xử lý nhanh chóng, giao diện phản hồi tức thì.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-check fs-1 text-primary"></i>
+                            <h5 class="card-title mt-3">An toàn & Bảo mật</h5>
+                            <p class="card-text">Bảo vệ thông tin người dùng với công nghệ bảo mật hàng đầu.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="bi bi-hand-thumbs-up fs-1 text-primary"></i>
+                            <h5 class="card-title mt-3">Thân thiện người dùng</h5>
+                            <p class="card-text">Giao diện trực quan, dễ sử dụng cho mọi đối tượng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="features" class="py-5 bg-body-tertiary">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5">Tính năng của phần mềm</h2>
+            <div class="row g-4">
+                <!-- Đăng ký học phần -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-journal-plus fs-1 text-primary mb-3"></i>
+                        <h5>Đăng ký học phần</h5>
+                        <p class="text-muted">Đăng ký và điều chỉnh học phần trực tuyến</p>
+                    </div>
+                </div>
+
+                <!-- Lịch học - Lịch thi -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-calendar3 fs-1 text-primary mb-3"></i>
+                        <h5>Lịch học - Lịch thi</h5>
+                        <p class="text-muted">Xem lịch học và lịch thi của các học phần</p>
+                    </div>
+                </div>
+
+                <!-- Điểm số học phần -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-graph-up fs-1 text-primary mb-3"></i>
+                        <h5>Điểm số học phần</h5>
+                        <p class="text-muted">Theo dõi kết quả học tập từng học phần</p>
+                    </div>
+                </div>
+
+                <!-- Chương trình học -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-mortarboard fs-1 text-primary mb-3"></i>
+                        <h5>Chương trình học</h5>
+                        <p class="text-muted">Xem tiến độ và kế hoạch học tập</p>
+                    </div>
+                </div>
+
+                <!-- Tài liệu học tập -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-file-earmark-text fs-1 text-primary mb-3"></i>
+                        <h5>Tài liệu học tập</h5>
+                        <p class="text-muted">Truy cập tài liệu của các học phần</p>
+                    </div>
+                </div>
+
+                <!-- Thông báo học phần -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-bell fs-1 text-primary mb-3"></i>
+                        <h5>Thông báo học phần</h5>
+                        <p class="text-muted">Cập nhật thông tin từ giảng viên</p>
+                    </div>
+                </div>
+
+                <!-- Nộp bài tập -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-upload fs-1 text-primary mb-3"></i>
+                        <h5>Nộp bài tập</h5>
+                        <p class="text-muted">Quản lý và nộp bài tập trực tuyến</p>
+                    </div>
+                </div>
+
+                <!-- Tương tác học phần -->
+                <div class="col-md-3">
+                    <div class="service-box text-center">
+                        <i class="bi bi-people fs-1 text-primary mb-3"></i>
+                        <h5>Tương tác học phần</h5>
+                        <p class="text-muted">Trao đổi với giảng viên và sinh viên</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .service-box {
+            padding: 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            height: 100%;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+
+            .service-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .service-box i {
+                display: inline-block;
+                width: 70px;
+                height: 70px;
+                line-height: 70px;
+                background: rgba(0, 77, 153, 0.1);
+                border-radius: 50%;
+                margin-bottom: 15px;
+            }
+
+            .service-box h5 {
+                color: #004d99;
+                margin-bottom: 10px;
+                font-weight: 600;
+            }
+
+            .service-box p {
+                font-size: 0.9rem;
+                margin-bottom: 0;
+            }
+
+        @@media (max-width: 768px) {
+            .service-box {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+
+    <!-- Chuyên ngành đào tạo Section -->
+    <section id="major" class="programs-section py-5">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5">Các chuyên ngành đào tạo</h2>
+            <div class="row g-4">
+                <!-- Khối ngành Kỹ thuật -->
+                <div class="col-md-4">
+                    <div class="card h-100 program-card">
+                        <div class="card-body">
+                            <i class="bi bi-cpu text-primary fs-1 mb-3"></i>
+                            <h5 class="card-title">Kỹ thuật - Công nghệ</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check2-circle"></i> Công nghệ Thông tin</li>
+                                <li><i class="bi bi-check2-circle"></i> Kỹ thuật Điện - Điện tử</li>
+                                <li><i class="bi bi-check2-circle"></i> Kỹ thuật Cơ khí</li>
+                                <li><i class="bi bi-check2-circle"></i> Công nghệ Ô tô</li>
+                            </ul>
+                            <a href="#" class="btn btn-outline-primary mt-3">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khối ngành Kinh tế -->
+                <div class="col-md-4">
+                    <div class="card h-100 program-card">
+                        <div class="card-body">
+                            <i class="bi bi-graph-up text-primary fs-1 mb-3"></i>
+                            <h5 class="card-title">Kinh tế - Tài chính</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check2-circle"></i> Quản trị Kinh doanh</li>
+                                <li><i class="bi bi-check2-circle"></i> Kế toán</li>
+                                <li><i class="bi bi-check2-circle"></i> Tài chính - Ngân hàng</li>
+                                <li><i class="bi bi-check2-circle"></i> Marketing</li>
+                            </ul>
+                            <a href="#" class="btn btn-outline-primary mt-3">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khối ngành Thủy sản -->
+                <div class="col-md-4">
+                    <div class="card h-100 program-card">
+                        <div class="card-body">
+                            <i class="bi bi-water text-primary fs-1 mb-3"></i>
+                            <h5 class="card-title">Thuỷ sản</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check2-circle"></i> Nuôi trồng Thủy sản</li>
+                                <li><i class="bi bi-check2-circle"></i> Công nghệ Chế biến Thủy sản</li>
+                                <li><i class="bi bi-check2-circle"></i> Quản lý Nguồn lợi Thủy sản</li>
+                                <li><i class="bi bi-check2-circle"></i> Bệnh học Thủy sản</li>
+                            </ul>
+                            <a href="#" class="btn btn-outline-primary mt-3">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khối ngành Du lịch -->
+                <div class="col-md-4">
+                    <div class="card h-100 program-card">
+                        <div class="card-body">
+                            <i class="bi bi-airplane text-primary fs-1 mb-3"></i>
+                            <h5 class="card-title">Du lịch</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check2-circle"></i> Quản trị Dịch vụ Du lịch và Lữ hành</li>
+                                <li><i class="bi bi-check2-circle"></i> Quản trị Khách sạn</li>
+                                <li><i class="bi bi-check2-circle"></i> Quản trị Nhà hàng</li>
+                                <li><i class="bi bi-check2-circle"></i> Du lịch</li>
+                            </ul>
+                            <a href="#" class="btn btn-outline-primary mt-3">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khối ngành Ngoại ngữ -->
+                <div class="col-md-4">
+                    <div class="card h-100 program-card">
+                        <div class="card-body">
+                            <i class="bi bi-translate text-primary fs-1 mb-3"></i>
+                            <h5 class="card-title">Ngoại ngữ</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check2-circle"></i> Ngôn ngữ Anh</li>
+                                <li><i class="bi bi-check2-circle"></i> Tiếng Anh Du lịch</li>
+                                <li><i class="bi bi-check2-circle"></i> Tiếng Anh Thương mại</li>
+                                <li><i class="bi bi-check2-circle"></i> Biên-Phiên dịch tiếng Anh</li>
+                            </ul>
+                            <a href="#" class="btn btn-outline-primary mt-3">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Khối ngành Khoa học Tự nhiên -->
+                <div class="col-md-4">
+                    <div class="card h-100 program-card">
+                        <div class="card-body">
+                            <i class="bi bi-globe-americas text-primary fs-1 mb-3"></i>
+                            <h5 class="card-title">Khoa học tự nhiên</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check2-circle"></i> Công nghệ Sinh học</li>
+                                <li><i class="bi bi-check2-circle"></i> Công nghệ Thực phẩm</li>
+                                <li><i class="bi bi-check2-circle"></i> Hóa học</li>
+                                <li><i class="bi bi-check2-circle"></i> Sinh học ứng dụng</li>
+                            </ul>
+                            <a href="#" class="btn btn-outline-primary mt-3">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Thêm CSS mới -->
+    <style>
+    </style>
+
+    <!-- Call to Action Section -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-4">Bạn cần trợ giúp?</h2>
+            <p class="lead mb-4">Liên hệ bộ phận hỗ trợ của chúng tôi tại đây.</p>
+            <a href="#" class="btn btn-light btn-lg">
+                Liên hệ ngay
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="bi bi-info-circle me-2"></i>Về NTU-CMS</h5>
+                    <p>Hệ thống quản lý học phần hiện đại của Trường Đại học Nha Trang</p>
+                    <p>Trải qua 65 năm xây dựng và phát triển, Trường Đại học Nha Trang đã trở thành một trong những cơ sở đào tạo đa ngành, đa lĩnh vực quy mô lớn; là cơ sở nghiên cứu chủ đạo, triển khai ứng dụng công nghệ tiên tiến, đặc biệt trong lĩnh vực thủy sản phục vụ phát triển kinh tế xã hội khu vực Nam Trung Bộ, Tây Nguyên và phạm vi cả nước.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="bi bi-link-45deg me-2"></i>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-chevron-right me-2"></i><a href="#" class="text-white">Trang chủ</a></li>
+                        <li><i class="bi bi-chevron-right me-2"></i><a href="#" class="text-white">Khóa học</a></li>
+                        <li><i class="bi bi-chevron-right me-2"></i><a href="#" class="text-white">Hướng dẫn sử dụng</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5><i class="bi bi-envelope me-2"></i>Thông tin liên hệ</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-geo-alt me-2 pb-4"></i>02 Nguyễn Đình Chiểu, phường Vĩnh Thọ, Nha Trang, Khánh Hòa</li>
+                        <li><i class="bi bi-telephone me-2 pb-4"></i>(0258) 3831149</li>
+                        <li><i class="bi bi-envelope me-2 pb-4"></i>dhnt@ntu.edu.vn</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+
+        /* Features Section Styles */
+        #features .card {
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+            #features .card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            }
+
+        #features .card-body {
+            padding: 2rem;
+        }
+
+        #features .bi {
+            color: #004d99;
+            margin-bottom: 1rem;
+        }
+
+        /* Call to Action Styles */
+        .cta-section {
+            background: linear-gradient(135deg, #004d99 0%, #0066cc 100%);
+            color: white;
+            padding: 60px 0;
+            margin: 40px 0;
+        }
+
+            .cta-section .btn-primary {
+                color: #004d99;
+                border: none;
+                padding: 12px 30px;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }
+
+                .cta-section .btn-primary:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                }
+
+        /* Stats Section Styles */
+        .stats-section {
+            padding: 40px 0;
+        }
+
+        .stats-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+            .stats-box .bi {
+                font-size: 2.5rem;
+                color: #004d99;
+                margin-bottom: 15px;
+            }
+
+        /* Footer Styles */
+        .footer {
+            background-color: #004d99;
+            color: white;
+            padding: 50px 0 20px;
+        }
+
+            .footer h5 {
+                font-weight: bold;
+                margin-bottom: 20px;
+                position: relative;
+                padding-bottom: 10px;
+            }
+
+                .footer h5::after {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    bottom: 0;
+                    width: 50px;
+                    height: 2px;
+                    background: white;
+                }
+
+            .footer ul li {
+                margin-bottom: 10px;
+            }
+
+            .footer a {
+                color: white;
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+
+                .footer a:hover {
+                    color: #ccc;
+                    padding-left: 5px;
+                }
+
+            .footer .bi {
+                margin-right: 10px;
+            }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 40px;
+        }
+
+        /* Responsive Adjustments */
+        @@media (max-width: 768px) {
+            #features .card {
+                margin-bottom: 20px;
+            }
+
+            .stats-box {
+                margin-bottom: 20px;
+            }
+        }
+
+        .program-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+            .program-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            }
+
+            .program-card .card-body {
+                padding: 2rem;
+            }
+
+            .program-card ul li {
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+            }
+
+                .program-card ul li i {
+                    color: #004d99;
+                    margin-right: 0.5rem;
+                }
+
+            .program-card .card-title {
+                color: #004d99;
+                margin-bottom: 1.5rem;
+                font-weight: bold;
+            }
+
+            .program-card .btn-outline-primary {
+                color: #004d99;
+                border-color: #004d99;
+            }
+
+                .program-card .btn-outline-primary:hover {
+                    background-color: #004d99;
+                    color: white;
+                }
+
+        @@media (max-width: 768px) {
+            .program-card {
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+}

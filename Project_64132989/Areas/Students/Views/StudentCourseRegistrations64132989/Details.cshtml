@@ -1,0 +1,51 @@
+﻿@model Project_64132989.Models.Data.StudentCourseRegistration
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Areas/Students/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>StudentCourseRegistration</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CourseOffering.course_id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CourseOffering.course_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Student.program_id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Student.program_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.registration_date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.registration_date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.status)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.status)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.registration_id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

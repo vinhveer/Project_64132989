@@ -1,0 +1,152 @@
+﻿@model IEnumerable<Project_64132989.Models.Data.Department>
+@{
+    ViewBag.Title = "Danh sách phòng ban";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<h4>Danh sách phòng ban</h4>
+
+<div id="toolbar">
+    <a href="@Url.Action("Create", "Departments64132989")" class="btn custom-btn me-2">
+        <i class="bi bi-plus-circle me-2"></i>Thêm phòng ban mới
+    </a>
+</div>
+
+<table id="departmentsTable" class="table-responsive"
+       data-toolbar="#toolbar"
+       data-search="true"
+       data-show-refresh="true"
+       data-show-toggle="true"
+       data-show-fullscreen="true"
+       data-show-columns="true"
+       data-show-export="true"
+       data-detail-view="false"
+       data-click-to-select="true"
+       data-pagination="true"
+       data-side-pagination="server"
+       data-url="@Url.Action("GetDepartmentList", "Departments64132989")"
+       data-method="post"
+       data-sort-name="departmentId"
+       data-sort-order="asc"
+       data-show-search-clear-button="true"
+       data-page-list="[10, 25, 50, 100]">
+    <thead>
+        <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="departmentId" data-sortable="true">@Html.DisplayNameFor(model => model.department_id)</th>
+            <th data-field="departmentName" data-sortable="true">@Html.DisplayNameFor(model => model.department_name)</th>
+            <th data-field="description" data-sortable="true">@Html.DisplayNameFor(model => model.description)</th>
+            <th data-field="status" data-formatter="statusFormatter">@Html.DisplayNameFor(model => model.status)</th>
+            <th data-field="actions" data-formatter="actionFormatter" data-class="p-0" data-align="center"></th>
+        </tr>
+    </thead>
+</table>
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table-locale-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        var $table = $('#departmentsTable');
+
+        function statusFormatter(value) {
+            if (value === 1) {
+                return '<span class="badge bg-success">Hoạt động</span>';
+            } else if (value === 0) {
+                return '<span class="badge bg-danger">Không hoạt động</span>';
+            }
+            return '<span class="badge bg-secondary">Không xác định</span>';
+        }
+
+        function actionFormatter(value, row) {
+            return [
+                '<div class="dropdown p-2">',
+                '<button class="btn custom-btn btn-sm" type="button" onclick="toggleActionMenu(this, \'' + row.departmentId + '\')">',
+                '<i class="bi bi-three-dots-vertical"></i>',
+                '</button>',
+                '</div>'
+            ].join('');
+        }
+
+        function debounce(func, delay) {
+            let timer;
+            return function (...args) {
+                const context = this;
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        function toggleActionMenu(button, departmentId) {
+            const existingDropdown = document.querySelector('.custom-action-dropdown');
+
+            if (existingDropdown) {
+                if (existingDropdown.dataset.departmentId === departmentId) {
+                    existingDropdown.classList.add('fade-out');
+                    setTimeout(() => existingDropdown.remove(), 200);
+                    return;
+                }
+                existingDropdown.remove();
+            }
+
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu custom-action-dropdown show fade-in';
+            dropdown.dataset.departmentId = departmentId;
+            dropdown.style.position = 'absolute';
+            dropdown.style.zIndex = '1100';
+            dropdown.innerHTML = `
+                <a class="dropdown-item" href="@Url.Action("Details", "Departments64132989")/${departmentId}">
+                    <i class="bi bi-info-circle me-2"></i>Chi tiết
+                </a>
+                <a class="dropdown-item" href="@Url.Action("Edit", "Departments64132989")/${departmentId}">
+                    <i class="bi bi-pencil me-2"></i>Chỉnh sửa
+                </a>
+            `;
+
+            document.body.appendChild(dropdown);
+
+            Popper.createPopper(button, dropdown, {
+                placement: 'bottom-end',
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, 8],
+                        },
+                    },
+                ],
+            });
+
+            const closeDropdown = (e) => {
+                if (!dropdown.contains(e.target) && e.target !== button) {
+                    dropdown.classList.add('fade-out');
+                    setTimeout(() => dropdown.remove(), 200);
+                    document.removeEventListener('click', closeDropdown);
+                }
+            };
+
+            setTimeout(() => {
+                document.addEventListener('click', closeDropdown);
+            }, 0);
+        }
+
+        const debouncedToggleActionMenu = debounce(toggleActionMenu, 300);
+
+        function initTable() {
+            $table.bootstrapTable('destroy').bootstrapTable({
+                locale: "vi-VN"
+            });
+        }
+
+        $(function () {
+            initTable();
+            $('#locale').change(initTable);
+        });
+    </script>
+}

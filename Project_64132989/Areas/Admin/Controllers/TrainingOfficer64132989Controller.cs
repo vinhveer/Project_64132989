@@ -125,7 +125,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                     email = u.email,
                     phoneNumber = u.Profile.phone_number,
                     dateOfBirth = u.Profile.date_of_birth,
-                    gender = u.Profile.gender == 1 ? "Nữ" : (u.Profile.gender == 0 ? "Nam" : "Khác")
+                    gender = u.Profile.gender == 1 ? "Nam" : (u.Profile.gender == 0 ? "Nữ" : "Khác")
                 })
                 .ToList();
 
