@@ -5,62 +5,56 @@
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
+
+
 <p>
     @Html.ActionLink(" ", "Index", null, new { @class = "btn custom-btn bi bi-arrow-left fs-6" })
 </p>
 
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">@ViewBag.Title</h5>
-        <div>
-            @Html.ActionLink("Chỉnh sửa", "Edit", new { id = Model.class_id }, new { @class = "btn btn-primary" })
-        </div>
-    </div>
-    <div class="card-body">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Mã lớp</label>
-                    <p class="form-control-plaintext">@Model.class_id</p>
-                </div>
-            </div>
+<h3 class="my-4">@Html.DisplayFor(Model => Model.class_name)</h3>
 
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Tên lớp</label>
-                    <p class="form-control-plaintext">@Model.class_name</p>
-                </div>
-            </div>
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="@Url.Action("Details", "AdminClasses64132989", new { id = Model.class_id })">Chi tiết lớp hành chính</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@Url.Action("GetStudentList", "AdminClasses64132989", new { classId = Model.class_id })">Danh sách lớp hành chính</a>
+    </li>
+</ul>
 
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Khoa</label>
-                    <p class="form-control-plaintext">@Model.Department.department_name</p>
-                </div>
-            </div>
 
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Giáo viên cố vấn</label>
-                    <p class="form-control-plaintext">@ViewBag.TeacherName</p>
-                </div>
-            </div>
+<table class="table">
+    <tbody>
+        <tr>
+            <th scope="row">@Html.DisplayNameFor(Model => Model.class_id)</th>
+            <td>@Html.DisplayFor(Model => Model.class_id)</td>
+        </tr>
+        <tr>
+            <th scope="row">@Html.DisplayNameFor(Model => Model.class_name)</th>
+            <td>@Html.DisplayFor(Model => Model.class_name)</td>
+        </tr>
+        <tr>
+            <th scope="row">@Html.DisplayNameFor(Model => Model.Department.department_name)</th>
+            <td>@Html.DisplayFor(Model => Model.Department.department_name)</td>
+        </tr>
+        <tr>
+            <th scope="row">Giáo viên cố vấn</th>
+            <td>@ViewBag.TeacherName</td>
+        </tr>
+        <tr>
+            <th scope="row">@Html.DisplayNameFor(Model => Model.status)</th>
+            <td>
+                @if (Model.status == 1)
+                {
+                    <span class="badge bg-success">Hoạt động</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Không hoạt động</span>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>
 
-            <div class="col-md-6">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Trạng thái</label>
-                    <p class="form-control-plaintext">
-                        @if (Model.status == 1)
-                        {
-                            <span class="badge bg-success">Hoạt động</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-danger">Không hoạt động</span>
-                        }
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+   

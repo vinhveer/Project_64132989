@@ -13,15 +13,22 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
     {
         private readonly Model64132989DbContext _context = new Model64132989DbContext();
 
-        [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
-        public JsonResult GetStudentList(int offset, int limit, string search, string sort, string order)
+        public JsonResult GetStudentList(int offset = 0, int limit = 10, string search = "", string sort = "", string order = "", string classId = "")
         {
             try
             {
+                // Khởi tạo query cơ bản
                 var query = _context.Users
                     .Where(u => u.user_type == 1)
                     .Include(u => u.Profile)
+                    .Include(u => u.Student)
                     .AsQueryable();
+
+                // Nếu có classId, lọc theo lớp. Ngược lại lấy tất cả sinh viên
+                if (!string.IsNullOrEmpty(classId))
+                {
+                    query = query.Where(u => u.Student.administrative_class_id == classId);
+                }
 
                 // Thêm điều kiện tìm kiếm
                 if (!string.IsNullOrEmpty(search))
@@ -74,23 +81,15 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
                         email = u.email,
                         phoneNumber = u.Profile.phone_number,
                         dateOfBirth = u.Profile.date_of_birth,
-                        gender = u.Profile.gender == 1 ? "Nữ" : (u.Profile.gender == 0 ? "Nam" : "Khác")
+                        gender = u.Profile.gender == 1 ? "Nữ" : (u.Profile.gender == 0 ? "Nam" : "Khác"),
+                        classId = u.Student.administrative_class_id
                     })
                     .ToList();
-
-                // Log thông tin để debug
-                System.Diagnostics.Debug.WriteLine($"Total records: {total}");
-                System.Diagnostics.Debug.WriteLine($"Offset: {offset}, Limit: {limit}");
-                System.Diagnostics.Debug.WriteLine($"Search: {search}, Sort: {sort}, Order: {order}");
-                System.Diagnostics.Debug.WriteLine($"Records returned: {students.Count}");
 
                 return Json(new { total = total, rows = students }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                // Log chi tiết lỗi
-                System.Diagnostics.Debug.WriteLine($"Error in GetStudentList: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
                 return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
             }
         }

@@ -334,6 +334,7 @@
     <Content Include="Areas\Teachers\Views\web.config" />
     <Content Include="Areas\Teachers\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Teachers\Views\Home64132989\Index.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\AdminClasses64132989\GetStudentList.cshtml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />

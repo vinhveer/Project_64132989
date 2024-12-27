@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -122,6 +123,100 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
                     success = false,
                     message = "Có lỗi xảy ra khi tải dữ liệu: " + ex.Message
                 }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        public ActionResult GetStudentList(string classId)
+        {
+            if (string.IsNullOrEmpty(classId))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var adminClass = db.AdminClasses.Find(classId);
+            if (adminClass == null)
+            {
+                return HttpNotFound();
+            }
+            ViewBag.ClassName = adminClass.class_name;
+            ViewBag.ClassId = classId;
+            return View();
+        }
+
+        [HttpPost]
+        public JsonResult AddStudentToClass(List<string> userIds, string classId)
+        {
+            Debug.WriteLine("AddStudentToClass: " + userIds.Count + " - " + classId);
+            try
+            {
+                // Xử lý logic thêm nhiều sinh viên vào lớp
+                foreach (var userId in userIds)
+                {
+                    var student = db.Students.Find(userId);
+                    if (student != null)
+                    {
+                        student.administrative_class_id = classId;
+                    }
+
+                    db.SaveChanges();
+                }
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public JsonResult RemoveStudentFromClass(string userId, string classId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(classId))
+                {
+                    return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
+                }
+
+                var student = db.Students.Find(userId);
+                if (student == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy sinh viên" });
+                }
+
+                student.administrative_class_id = null;
+
+                db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        public JsonResult RemoveMultipleStudentsFromClass(List<string> userIds, string classId)
+        {
+            try
+            {
+                if (userIds == null || !userIds.Any() || string.IsNullOrEmpty(classId))
+                {
+                    return Json(new { success = false, message = "Dữ liệu không hợp lệ" });
+                }
+                foreach (var userId in userIds)
+                {
+                    var student = db.Students.Find(userId);
+                    if (student != null)
+                    {
+                        student.administrative_class_id = null;
+                    }
+                }
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
             }
         }
 

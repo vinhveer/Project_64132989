@@ -1,0 +1,358 @@
+﻿@{
+    ViewBag.Title = "Chi tiết lớp hành chính";
+    Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<p>
+    @Html.ActionLink(" ", "Index", null, new { @class = "btn custom-btn bi bi-arrow-left fs-6" })
+</p>
+
+<h3 class="my-4">@ViewBag.ClassName</h3>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link" aria-current="page" href="@Url.Action("Details", "AdminClasses64132989", new { id = ViewBag.ClassId })">Chi tiết lớp hành chính</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="@Url.Action("UploadCourseList", "AdminClasses64132989", new { classId = ViewBag.ClassId })">Danh sách lớp hành chính</a>
+    </li>
+</ul>
+
+<div id="toolbar">
+    <button id="addStudentBtn" class="btn custom-btn me-2">
+        <i class="bi bi-plus-circle me-2"></i>Thêm sinh viên vào lớp
+    </button>
+    <button id="deleteMultipleStudent" class="btn custom-btn me-2">
+        <i class="bi bi-trash me-2"></i>Xoá sinh viên đã đánh dấu ra khỏi lớp
+    </button>
+</div>
+
+<table id="studentListTable"
+       data-toolbar="#toolbar"
+       data-search="true"
+       data-show-refresh="true"
+       data-show-toggle="true"
+       data-show-fullscreen="true"
+       data-show-columns="true"
+       data-show-export="true"
+       data-detail-view="false"
+       data-click-to-select="true"
+       data-pagination="true"
+       data-side-pagination="server"
+       data-url="@Url.Action("GetStudentList", "GetUserAPI64132989", new { classId = ViewBag.ClassId })"
+       data-page-list="[10, 25, 50, 100]">
+    <thead>
+        <tr>
+            <th data-field="state" data-checkbox="true"></th>
+            <th data-field="userId" data-sortable="true">Mã sinh viên</th>
+            <th data-field="fullName" data-sortable="true">Họ và tên</th>
+            <th data-field="email" data-sortable="true">Email</th>
+            <th data-field="gender" data-sortable="true">Giới tính</th>
+            <th data-field="operate" data-formatter="operateFormatter" data-events="operateEvents">Tác vụ</th>
+        </tr>
+    </thead>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStudentModalLabel">Danh sách sinh viên</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div id="toolbar2">
+                <button type="button" class="btn custom-btn" id="enrollStudentsBtn">Thêm sinh viên</button>
+            </div>
+            <div class="modal-body">
+                <table id="availableStudentsTable"
+                       data-search="true"
+                       data-toolbar="#toolbar2"
+                       data-show-refresh="true"
+                       data-pagination="true"
+                       data-page-list="[10, 25, 50, 100]">
+                    <thead>
+                        <tr>
+                            <th data-field="state" data-checkbox="true"></th>
+                            <th data-field="userId" data-sortable="true">Mã sinh viên</th>
+                            <th data-field="fullName" data-sortable="true">Họ và tên</th>
+                            <th data-field="email" data-sortable="true">Email</th>
+                            <th data-field="phoneNumber" data-sortable="true">Số điện thoại</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table-locale-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Khởi tạo các biến global
+        var $table = $('#studentListTable');
+        var $availableStudentsTable = $('#availableStudentsTable');
+        // Khởi tạo biến table global
+        var $table = $('#studentListTable');
+
+        $(function() {
+            // Xử lý sự kiện khi click nút xóa nhiều sinh viên
+            $('#deleteMultipleStudent').click(function() {
+                var selectedStudents = $table.bootstrapTable('getSelections');
+
+                if (selectedStudents.length === 0) {
+                    Swal.fire('Thông báo', 'Vui lòng chọn ít nhất một sinh viên để xóa', 'warning');
+                    return;
+                }
+
+                var studentIds = selectedStudents.map(function(student) {
+                    return student.userId;
+                });
+
+                var studentNames = selectedStudents.map(function(student) {
+                    return student.fullName;
+                });
+            });
+
+            // Xử lý enable/disable nút xóa nhiều sinh viên
+            $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
+                var selectedStudents = $table.bootstrapTable('getSelections');
+                $('#deleteMultipleStudent').prop('disabled', !selectedStudents.length);
+            });
+        });
+
+        // Các hàm formatter
+        function dateFormatter(value) {
+            return moment(value).format('DD/MM/YYYY');
+        }
+
+        function operateFormatter(value, row, index) {
+            return [
+                '<button class="btn btn-danger btn-sm remove">',
+                '<i class="bi bi-trash me-2"></i>',
+                'Xóa khỏi lớp',
+                '</button>'
+            ].join('');
+        }
+
+        // Xử lý sự kiện cho nút xóa
+        window.operateEvents = {
+            'click .remove': function (e, value, row, index) {
+                removeStudentFromClass(row.userId);
+            }
+        };
+
+        function removeStudentFromClass(userId) {
+            Swal.fire({
+                title: 'Xác nhận xóa',
+                text: 'Bạn có chắc chắn muốn xóa sinh viên này khỏi lớp?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("RemoveStudentFromClass")',
+                        type: 'POST',
+                        data: {
+                            userId: userId,
+                            classId: '@ViewBag.ClassId'
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                Swal.fire('Thành công!', 'Đã xóa sinh viên khỏi lớp.', 'success');
+                                $table.bootstrapTable('refresh');
+                            } else {
+                                Swal.fire('Lỗi!', response.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Lỗi!', 'Có lỗi xảy ra trong quá trình xử lý.', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function addStudentsToClass(studentIds) {
+            $.ajax({
+                url: '@Url.Action("AddStudentToClass")',
+                type: 'POST',
+                data: {
+                    userIds: studentIds,
+                    classId: '@ViewBag.ClassId'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire('Thành công!', response.message, 'success');
+                        $('#addStudentModal').modal('hide');
+                        $table.bootstrapTable('refresh');
+                        $availableStudentsTable.bootstrapTable('refresh');
+                    } else {
+                        Swal.fire('Lỗi!', response.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Lỗi!', 'Có lỗi xảy ra trong quá trình xử lý.', 'error');
+                }
+            });
+        }
+
+        // Khởi tạo các bảng khi document ready
+        $(function () {
+            // Khởi tạo bảng sinh viên trong lớp
+            $table.bootstrapTable({
+                locale: 'vi-VN',
+                formatNoMatches: function () {
+                    return 'Không có dữ liệu';
+                }
+            });
+
+            // Khởi tạo bảng sinh viên có sẵn
+            $availableStudentsTable.bootstrapTable({
+                locale: 'vi-VN',
+                url: '@Url.Action("GetStudentList", "GetUserAPI64132989")',
+                sidePagination: 'server',
+                pagination: true,
+                pageSize: 10,
+                pageList: [10, 25, 50, 100],
+                search: true,
+                showRefresh: true,
+                formatNoMatches: function () {
+                    return 'Không có dữ liệu';
+                },
+                queryParams: function(params) {
+                    return {
+                        offset: params.offset,
+                        limit: params.limit,
+                        search: params.search,
+                        sort: params.sort,
+                        order: params.order
+                    };
+                }
+            });
+
+            // Xử lý sự kiện mở modal
+            $('#addStudentBtn').click(function() {
+                $('#addStudentModal').modal('show');
+                $availableStudentsTable.bootstrapTable('refresh');
+            });
+
+            // Xử lý sự kiện thêm sinh viên
+            $('#enrollStudentsBtn').click(function() {
+                var selectedStudents = $availableStudentsTable.bootstrapTable('getSelections');
+                if (selectedStudents.length === 0) {
+                    Swal.fire('Thông báo', 'Vui lòng chọn ít nhất một sinh viên', 'warning');
+                    return;
+                }
+
+                var studentIds = selectedStudents.map(function(student) {
+                    return student.userId;
+                });
+
+                Swal.fire({
+                    title: 'Xác nhận thêm',
+                    text: 'Bạn có chắc chắn muốn thêm các sinh viên đã chọn vào lớp?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        addStudentsToClass(studentIds);
+                    }
+                });
+            });
+
+            // Xử lý sự kiện xóa nhiều sinh viên
+            $('#deleteMultipleStudent').click(function () {
+                var selectedStudents = $table.bootstrapTable('getSelections');
+                if (selectedStudents.length === 0) {
+                    Swal.fire('Thông báo', 'Vui lòng chọn ít nhất một sinh viên để xóa', 'warning');
+                    return;
+                }
+                var studentIds = selectedStudents.map(function (student) {
+                    return student.userId;
+                });
+                var studentNames = selectedStudents.map(function (student) {
+                    return student.fullName;
+                });
+                removeMultipleStudents(studentIds, studentNames);
+            });
+
+            // Xử lý sự kiện khi chọn nhiều sinh viên
+            $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+                var selectedStudents = $table.bootstrapTable('getSelections');
+                $('#deleteMultipleStudent').prop('disabled', !selectedStudents.length);
+            });
+
+            // Hàm xoá nhiều sinh viên
+            function removeMultipleStudents(studentIds, studentNames) {
+                Swal.fire({
+                    title: 'Xác nhận xóa',
+                    html: `Bạn có chắc chắn muốn xóa ${studentIds.length} sinh viên khỏi lớp?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Đồng ý',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Hiển thị loading
+                        Swal.fire({
+                            title: 'Đang xử lý',
+                            text: 'Vui lòng chờ...',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        $.ajax({
+                            url: '@Url.Action("RemoveMultipleStudentsFromClass")',
+                            type: 'POST',
+                            data: {
+                                userIds: studentIds,
+                                classId: '@ViewBag.ClassId'
+                            },
+                            success: function (response) {
+                                Swal.close();
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: 'Đã xóa các sinh viên đã chọn khỏi lớp.',
+                                        icon: 'success',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                    $table.bootstrapTable('refresh');
+                                    $table.bootstrapTable('uncheckAll');
+                                } else {
+                                    Swal.fire('Lỗi!', response.message || 'Có lỗi xảy ra trong quá trình xử lý.', 'error');
+                                }
+                            },
+                            error: function () {
+                                Swal.fire('Lỗi!', 'Có lỗi xảy ra trong quá trình xử lý.', 'error');
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+}
