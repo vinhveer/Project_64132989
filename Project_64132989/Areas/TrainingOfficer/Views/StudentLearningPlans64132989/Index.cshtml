@@ -1,7 +1,9 @@
 ﻿@{
     ViewBag.Title = "Danh sách kế hoạch học tập";
-    Layout = "~/Areas/Students/Views/Shared/_Layout.cshtml";
+    Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
+
+<btn class="btn custom-btn mb-4">Thực hiện quá trình xếp lớp tự động</btn>
 
 <h4 class="mb-3">Danh sách kế hoạch học tập sinh viên</h4>
 
@@ -61,6 +63,21 @@
             </div>
             <div class="modal-body">
                 <div class="row mb-3">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label">Chọn sinh viên</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="studentSearch"
+                                       placeholder="Nhập mã hoặc tên sinh viên...">
+                                <button class="btn btn-outline-secondary" type="button" id="searchStudentBtn">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="studentSearchResults" class="list-group mb-3" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Kết quả tìm kiếm sinh viên sẽ hiển thị ở đây -->
+                    </div>
                     <div class="col-md-6">
                         <label class="form-label">Chọn học kỳ</label>
                         <select class="form-select" id="create_semester_id" name="semester_id" required>
@@ -185,39 +202,55 @@
 
         function actionFormatter(value, row) {
             return [
-                '<div class="dropdown p-2">',
-                '<button class="btn custom-btn btn-sm" type="button" onclick="toggleActionMenu(this, \'' + row.learningPlanId + '\')">',
-                '<i class="bi bi-three-dots-vertical"></i>',
-                '</button>',
-                '</div>'
+                    '<div class="dropdown p-2">',
+                        '<button class="btn custom-btn btn-sm" type="button" onclick="toggleActionMenu(this, \'' + row.learningPlanId + '\')">',
+                            '<i class="bi bi-three-dots-vertical"></i>',
+                        '</button>',
+                    '</div>'
             ].join('');
         }
 
         function toggleActionMenu(button, planId) {
             const existingDropdown = document.querySelector('.custom-action-dropdown');
 
+            // Nếu đang mở dropdown và click lại button đó -> đóng dropdown
+            if (existingDropdown && existingDropdown.dataset.planId === planId) {
+                existingDropdown.remove();
+                return;
+            }
+
+            // Nếu có dropdown khác đang mở -> đóng nó trước
             if (existingDropdown) {
                 existingDropdown.remove();
             }
 
             const dropdown = document.createElement('div');
             dropdown.className = 'dropdown-menu custom-action-dropdown show';
+            dropdown.dataset.planId = planId; // Lưu planId để check khi click
             dropdown.innerHTML = `
                 <a class="dropdown-item" href="@Url.Action("Details")/${planId}">
                     <i class="bi bi-info-circle me-2"></i>Chi tiết
                 </a>
-                <button class="dropdown-item" href="javascript:void(0);" onclick="editPlan('${planId}')">
+                <button class="dropdown-item" onclick="editPlan('${planId}')">
                     <i class="bi bi-pencil me-2"></i>Chỉnh sửa
                 </button>
-                <a class="dropdown-item" href="javascript:void(0);" onclick="deletePlan('${planId}')" style="color: red;">
+                <button class="dropdown-item text-danger" onclick="deletePlan('${planId}')">
                     <i class="bi bi-trash me-2"></i>Xóa
-                </a>
+                </button>
             `;
 
             document.body.appendChild(dropdown);
 
             const popperInstance = Popper.createPopper(button, dropdown, {
                 placement: 'bottom-end',
+                modifiers: [
+                    {
+                        name: 'offset',
+                        options: {
+                            offset: [0, 8],
+                        },
+                    },
+                ],
             });
 
             document.addEventListener('click', function closeDropdown(e) {
@@ -405,43 +438,193 @@
             $(this).closest('tr').remove();
         });
 
-        $('#saveCreateBtn').click(function() {
-            const semesterId = $('#create_semester_id').val();
+        let selectedStudentId = null;
 
+        // Xử lý tìm kiếm sinh viên
+        $('#studentSearch').on('input', function() {
+            const searchText = $(this).val();
+            if (searchText.length < 2) {
+                $('#studentSearchResults').empty();
+                return;
+            }
+
+            $.get('@Url.Action("GetStudentList", "GetUserAPI64132989")', {
+                offset: 0,
+                limit: 10,
+                search: searchText,
+                sort: 'userId',
+                order: 'asc',
+                classId: ''
+            }, function(response) {
+                displayStudentSearchResults(response.rows);
+            });
+        });
+
+        function displayStudentSearchResults(students) {
+            const results = $('#studentSearchResults');
+            results.empty();
+
+            students.forEach(student => {
+                const item = $(`
+                    <a href="#" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${student.userId}</strong> - ${student.fullName}
+                                <br>
+                                <small class="text-muted">${student.email}</small>
+                            </div>
+                            <button class="btn btn-sm btn-success select-student"
+                                    data-id="${student.userId}"
+                                    data-name="${student.fullName}">
+                                <i class="bi bi-check-circle"></i>
+                            </button>
+                        </div>
+                    </a>
+                `);
+
+                // Thêm sự kiện click cho cả item
+                item.on('click', function(e) {
+                    if (!$(e.target).hasClass('btn') && !$(e.target).hasClass('bi')) {
+                        $('#studentSearch').val(`${student.userId} - ${student.fullName}`);
+                        selectedStudentId = student.userId;
+                        $('#studentSearchResults').empty();
+                    }
+                });
+
+                results.append(item);
+            });
+        }
+
+        // Sửa lại sự kiện tìm kiếm để chỉ tìm khi không có sinh viên được chọn
+        $('#studentSearch').on('input', function() {
+            const searchText = $(this).val();
+
+            // Reset selectedStudentId nếu người dùng thay đổi text
+            if (selectedStudentId && !$(this).val().startsWith(selectedStudentId)) {
+                selectedStudentId = null;
+            }
+
+            if (searchText.length < 2) {
+                $('#studentSearchResults').empty();
+                return;
+            }
+
+            $.get('@Url.Action("GetStudentList")', {
+                offset: 0,
+                limit: 10,
+                search: searchText,
+                sort: 'userId',
+                order: 'asc',
+                classId: ''
+            }, function(response) {
+                displayStudentSearchResults(response.rows);
+            });
+        });
+
+        // Xử lý chọn sinh viên
+        $(document).on('click', '.select-student', function (e) {
+            e.preventDefault();
+            const studentId = $(this).data('id');
+            const studentName = $(this).data('name');
+
+            // Điền thông tin sinh viên vào ô tìm kiếm
+            $('#studentSearch').val(`${studentId} - ${studentName}`);
+            selectedStudentId = studentId; // Lưu ID để sử dụng khi submit
+
+            // Xóa kết quả tìm kiếm sau khi chọn
+            $('#studentSearchResults').empty();
+        });
+
+        // Xử lý xóa sinh viên đã chọn
+        $('#clearSelectedStudent').click(function() {
+            selectedStudentId = null;
+            $('#selectedStudent').addClass('d-none');
+            $('#selectedStudentInfo').html('');
+        });
+
+        $('#saveCreateBtn').click(function() {
+            if (!selectedStudentId) {
+                Swal.fire('Lỗi', 'Vui lòng chọn sinh viên', 'error');
+                return;
+            }
+
+            const semesterId = $('#create_semester_id').val();
             if (!semesterId) {
                 Swal.fire('Lỗi', 'Vui lòng chọn học kỳ', 'error');
                 return;
             }
 
-            const plans = $('#selectedCoursesBody tr').map(function(index) {
-                return {
-                    learning_plan_id: Date.now() + index, // Tạo ID unique cho từng plan
-                    course_id: $(this).attr('id').replace('course-', ''),
-                    semester_id: parseInt(semesterId)
-                };
+            const courseIds = $('#selectedCoursesBody tr').map(function() {
+                return $(this).attr('id').replace('course-', '');
             }).get();
 
-            if (plans.length === 0) {
+            if (courseIds.length === 0) {
                 Swal.fire('Lỗi', 'Vui lòng chọn ít nhất một học phần', 'error');
                 return;
             }
 
+            const data = {
+                studentId: selectedStudentId,
+                courseIds: courseIds,
+                semesterId: parseInt(semesterId)
+            };
+
+            // Hiển thị loading
+            Swal.fire({
+                title: 'Đang xử lý...',
+                text: 'Vui lòng chờ trong giây lát',
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showConfirmButton: false
+            });
+
             $.ajax({
                 url: '@Url.Action("Create")',
                 type: 'POST',
-                data: JSON.stringify(plans), // Chỉ gửi mảng plans trực tiếp
-                contentType: 'application/json', // Quan trọng: định dạng JSON
+                data: JSON.stringify(data),
+                contentType: 'application/json',
                 success: function(response) {
+                    // Đóng loading
+                    Swal.close();
+
                     if (response.success) {
                         $('#createModal').modal('hide');
                         $table.bootstrapTable('refresh');
-                        Swal.fire('Thành công', 'Đã thêm kế hoạch học tập mới', 'success');
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: 'Đã thêm kế hoạch học tập mới',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        // Reset form
+                        selectedStudentId = null;
+                        $('#studentSearch').val('');
+                        $('#selectedCoursesBody').empty();
+                        $('#create_semester_id').val('');
                     } else {
-                        Swal.fire('Lỗi', response.message, 'error');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: response.message
+                        });
                     }
                 },
-                error: function() {
-                    Swal.fire('Lỗi', 'Có lỗi xảy ra khi lưu kế hoạch', 'error');
+                error: function(xhr, status, error) {
+                    // Đóng loading
+                    Swal.close();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: 'Có lỗi xảy ra khi lưu kế hoạch: ' + error
+                    });
                 }
             });
         });
@@ -487,6 +670,27 @@
                     }
                 }
             });
+        });
+
+        $('#createModal').on('show.bs.modal', function () {
+            $.get('@Url.Action("GetSemesters")', function(data) {
+                var select = $('#create_semester_id');
+                select.empty();
+                select.append(new Option('Chọn học kỳ', ''));
+                data.forEach(function(item) {
+                    select.append(new Option(item.name, item.id));
+                });
+            });
+
+            // Clear previous data
+            $('#studentSearch').val(''); // Thêm dòng này
+            $('#studentSearchResults').empty(); // Thêm dòng này
+            selectedStudentId = null; // Thêm dòng này
+            $('#selectedStudent').addClass('d-none'); // Thêm dòng này
+            $('#selectedStudentInfo').html(''); // Thêm dòng này
+            $('#courseSearch').val('');
+            $('#searchResults').empty();
+            $('#selectedCoursesBody').empty();
         });
     </script>
 }

@@ -15,6 +15,7 @@ namespace Project_64132989.Models.Data
             CourseOfferings = new HashSet<CourseOffering>();
             Courses1 = new HashSet<Cours>();
             StudentLearningPlans = new HashSet<StudentLearningPlan>();
+            TeacherAssignments = new HashSet<TeacherAssignment>();
             TrainingProgramCourses = new HashSet<TrainingProgramCours>();
         }
 
@@ -53,6 +54,9 @@ namespace Project_64132989.Models.Data
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<StudentLearningPlan> StudentLearningPlans { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TeacherAssignment> TeacherAssignments { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TrainingProgramCours> TrainingProgramCourses { get; set; }

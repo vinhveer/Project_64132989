@@ -209,6 +209,8 @@
     <Compile Include="Areas\TrainingOfficer\Controllers\GetUserAPI64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\Home64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\Semesters64132989Controller.cs" />
+    <Compile Include="Areas\TrainingOfficer\Controllers\StudentLearningPlans64132989Controller.cs" />
+    <Compile Include="Areas\TrainingOfficer\Controllers\TeacherAssignments64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\TrainingPrograms64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\TrainingOfficerAreaRegistration.cs" />
     <Compile Include="Controllers\Home64132989Controller.cs" />
@@ -233,6 +235,7 @@
     <Compile Include="Models\Data\StudentLearningPlan.cs" />
     <Compile Include="Models\Data\sysdiagram.cs" />
     <Compile Include="Models\Data\Teacher.cs" />
+    <Compile Include="Models\Data\TeacherAssignment.cs" />
     <Compile Include="Models\Data\TrainingProgram.cs" />
     <Compile Include="Models\Data\TrainingProgramCours.cs" />
     <Compile Include="Models\Data\User.cs" />
@@ -316,10 +319,7 @@
     <Content Include="Areas\Students\Views\web.config" />
     <Content Include="Areas\Students\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Students\Views\Home64132989\Index.cshtml" />
-    <Content Include="Areas\Students\Views\StudentLearningPlans64132989\Create.cshtml" />
-    <Content Include="Areas\Students\Views\StudentLearningPlans64132989\Delete.cshtml" />
     <Content Include="Areas\Students\Views\StudentLearningPlans64132989\Details.cshtml" />
-    <Content Include="Areas\Students\Views\StudentLearningPlans64132989\Edit.cshtml" />
     <Content Include="Areas\Students\Views\StudentLearningPlans64132989\Index.cshtml" />
     <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Create.cshtml" />
     <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Delete.cshtml" />
@@ -335,6 +335,8 @@
     <Content Include="Areas\Teachers\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Teachers\Views\Home64132989\Index.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\AdminClasses64132989\GetStudentList.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\StudentLearningPlans64132989\Index.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\TeacherAssignments64132989\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />

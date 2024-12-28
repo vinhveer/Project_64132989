@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Project_64132989.Models.Data;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using Project_64132989.Models.Data;
 
-namespace Project_64132989.Areas.Students.Controllers
+namespace Project_64132989.Areas.TrainingOfficer.Controllers
 {
     public class StudentLearningPlans64132989Controller : Controller
     {
@@ -18,8 +17,7 @@ namespace Project_64132989.Areas.Students.Controllers
         // GET: Students/StudentLearningPlans64132989
         public ActionResult Index()
         {
-            var studentLearningPlans = db.StudentLearningPlans.Include(s => s.Cours).Include(s => s.Semester).Include(s => s.Student);
-            return View(studentLearningPlans.ToList());
+            return View();
         }
 
         [HttpGet]
@@ -27,7 +25,8 @@ namespace Project_64132989.Areas.Students.Controllers
         {
             var semesters = db.Semesters
                 .OrderByDescending(s => s.semester_id)
-                .Select(s => new {
+                .Select(s => new
+                {
                     id = s.semester_id,
                     name = s.semester_name
                 })
@@ -43,7 +42,6 @@ namespace Project_64132989.Areas.Students.Controllers
                 .Include(s => s.Student)
                 .Include(s => s.Cours)
                 .Include(s => s.Semester)
-                .Where(s => s.student_id == User.Identity.Name)
                 .AsQueryable();
 
             // Thêm filter theo học kỳ
@@ -114,27 +112,13 @@ namespace Project_64132989.Areas.Students.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        // GET: Students/StudentLearningPlans64132989/Details/5
-        public ActionResult Details(long? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            StudentLearningPlan studentLearningPlan = db.StudentLearningPlans.Find(id);
-            if (studentLearningPlan == null)
-            {
-                return HttpNotFound();
-            }
-            return View(studentLearningPlan);
-        }
-
         [HttpGet]
         public JsonResult GetCourses()
         {
             var courses = db.Courses
                 .OrderBy(c => c.course_name)
-                .Select(c => new {
+                .Select(c => new
+                {
                     id = c.course_id,
                     name = c.course_name,
                     credits = c.credits
@@ -150,7 +134,8 @@ namespace Project_64132989.Areas.Students.Controllers
                 return Json(null, JsonRequestBehavior.AllowGet);
 
             var plan = db.StudentLearningPlans
-                .Select(p => new {
+                .Select(p => new
+                {
                     p.learning_plan_id,
                     p.student_id,
                     p.course_id,
@@ -175,49 +160,108 @@ namespace Project_64132989.Areas.Students.Controllers
         }
 
         [HttpPost]
-        public JsonResult Create(List<StudentLearningPlan> plans)
+        public JsonResult Create(string studentId, List<string> courseIds, int semesterId)
         {
-            try
+            using (var transaction = db.Database.BeginTransaction())
             {
-                // Lấy thông tin student_id từ user đang đăng nhập
-                string studentId = User.Identity.Name;
-
-                // Cập nhật student_id và planned_date cho tất cả các plans
-                foreach (var plan in plans)
+                try
                 {
-                    plan.student_id = studentId;
-                    plan.planned_date = DateTime.UtcNow;
+                    // Kiểm tra sinh viên tồn tại
+                    var student = db.Students
+                        .AsNoTracking()
+                        .FirstOrDefault(s => s.user_id == studentId);
+
+                    if (student == null)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = $"Không tìm thấy sinh viên có mã {studentId}"
+                        });
+                    }
+
+                    // Kiểm tra khóa học tồn tại
+                    var existingCourses = db.Courses
+                        .AsNoTracking()
+                        .Where(c => courseIds.Contains(c.course_id))
+                        .Select(c => c.course_id)
+                        .ToList();
+
+                    if (existingCourses.Count != courseIds.Count)
+                    {
+                        var nonExistingCourses = courseIds.Except(existingCourses);
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Không tìm thấy khóa học: " + string.Join(", ", nonExistingCourses)
+                        });
+                    }
+
+                    // Kiểm tra trùng lặp
+                    var existingPlans = db.StudentLearningPlans
+                        .AsNoTracking()
+                        .Where(p => p.student_id == studentId && courseIds.Contains(p.course_id))
+                        .Select(p => p.course_id)
+                        .ToList();
+
+                    if (existingPlans.Any())
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Các học phần sau đã có trong kế hoạch: " + string.Join(", ", existingPlans)
+                        });
+                    }
+
+                    // Kiểm tra học kỳ tồn tại
+                    var semester = db.Semesters
+                        .AsNoTracking()
+                        .FirstOrDefault(s => s.semester_id == semesterId);
+
+                    if (semester == null)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Không tìm thấy học kỳ được chọn"
+                        });
+                    }
+                    var currentDate = DateTime.UtcNow;
+
+                    var plans = courseIds.Select((courseId, index) => new StudentLearningPlan
+                    {
+                        learning_plan_id = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + index,
+                        student_id = studentId,
+                        course_id = courseId,
+                        semester_id = semesterId,
+                        planned_date = currentDate
+                    }).ToList();
+
+                    // Thêm từng plan một
+                    foreach (var plan in plans)
+                    {
+                        db.StudentLearningPlans.Add(plan);
+                    }
+
+                    // Lưu thay đổi
+                    db.SaveChanges();
+                    transaction.Commit();
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Đã thêm kế hoạch học tập thành công"
+                    });
                 }
-
-                // Kiểm tra trùng lặp
-                var existingPlans = db.StudentLearningPlans
-                    .Where(p => p.student_id == studentId)
-                    .Select(p => p.course_id)
-                    .ToList();
-
-                var duplicates = plans
-                    .Where(p => existingPlans.Contains(p.course_id))
-                    .Select(p => p.course_id)
-                    .ToList();
-
-                if (duplicates.Any())
+                catch (Exception ex)
                 {
+                    transaction.Rollback();
                     return Json(new
                     {
                         success = false,
-                        message = "Các học phần sau đã có trong kế hoạch: " + string.Join(", ", duplicates)
+                        message = "Có lỗi xảy ra khi thêm kế hoạch học tập: " + ex.Message + ex.InnerException
                     });
                 }
-
-                // Thêm tất cả plans vào database
-                db.StudentLearningPlans.AddRange(plans);
-                db.SaveChanges();
-
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
             }
         }
 

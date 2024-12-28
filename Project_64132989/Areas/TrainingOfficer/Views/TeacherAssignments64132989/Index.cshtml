@@ -1,0 +1,159 @@
+﻿@model IEnumerable<Project_64132989.Models.Data.TeacherAssignment>
+
+@{
+    ViewBag.Title = "Danh sách giảng viên giảng dạy học phần";
+    Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
+}
+
+<div class="mb-3">
+    <h3>
+        Danh sách giảng viên giảng dạy học phần
+        <span class="text-primary">[@ViewBag.CourseId] @ViewBag.CourseName</span>
+    </h3>
+    <button type="button" class="btn btn-primary my-3" id="btnCreate">
+        <i class="bi bi-plus-circle me-2"></i>Thêm giảng viên
+    </button>
+</div>
+
+<table class="table table-hover align-middle">
+    <thead>
+        <tr>
+            <th>Mã giảng viên</th>
+            <th>Tên giảng viên</th>
+            <th>Khoa</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody id="assignmentTableBody">
+        @foreach (var item in Model)
+        {
+            <tr id="assignment-@item.assignment_id">
+                <td>@item.Teacher.user_id</td>
+                <td>@($"{item.Teacher.User.Profile.last_name} {item.Teacher.User.Profile.first_name}")</td>
+                <td>@item.Teacher.Department.department_name</td>
+                <td>
+                    <button class="btn btn-sm btn-danger" onclick="deleteAssignment(@item.assignment_id)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal chọn giảng viên -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chọn giảng viên phân công giảng dạy</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table id="teachersTable" data-toggle="table" data-pagination="true" data-search="true"
+                       data-side-pagination="server" data-page-list="[5, 10, 25]"
+                       data-url="@Url.Action("GetTeacherList", "GetUserAPI64132989", new { area = "TrainingOfficer" })">
+                    <thead>
+                        <tr>
+                            <th data-field="userId">Mã giảng viên</th>
+                            <th data-field="fullName">Họ và tên</th>
+                            <th data-field="department_name">Khoa</th>
+                            <th data-field="operate" data-formatter="actionFormatter" data-align="center"></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/locale/bootstrap-table-vi-VN.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function actionFormatter(value, row) {
+            return `<button type="button" class="btn btn-primary btn-sm" onclick="assignTeacher('${row.userId}')">
+                        <i class="bi bi-plus-circle me-2"></i>Phân công
+                    </button>`;
+        }
+
+        function assignTeacher(teacherId) {
+            $.ajax({
+                url: '@Url.Action("Create")',
+                type: 'POST',
+                data: {
+                    teacher_id: teacherId,
+                    course_id: '@ViewBag.CourseId',
+                    assignment_id: Date.now()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#createModal').modal('hide');
+
+                        // Thêm dòng mới vào bảng
+                        const newRow = `
+                            <tr id="assignment-${response.data.assignment_id}">
+                                <td>${response.data.user_id}</td>
+                                <td>${response.data.fullName}</td>
+                                <td>${response.data.department}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteAssignment(${response.data.assignment_id})">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>`;
+                        $('#assignmentTableBody').append(newRow);
+
+                        Swal.fire('Thành công', response.message, 'success');
+                    } else {
+                        Swal.fire('Lỗi', response.message, 'error');
+                    }
+                }
+            });
+        }
+
+        function deleteAssignment(id) {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: "Bạn không thể hoàn tác sau khi xóa!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Delete")',
+                        type: 'POST',
+                        data: { id: id },
+                        success: function(response) {
+                            if (response.success) {
+                                $(`#assignment-${id}`).remove();
+                                Swal.fire('Đã xóa!', response.message, 'success');
+                            } else {
+                                Swal.fire('Lỗi', response.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        $(function() {
+            $('#btnCreate').click(function() {
+                $('#createModal').modal('show');
+            });
+
+            $('#teachersTable').bootstrapTable({
+                locale: 'vi-VN',
+                pageSize: 5
+            });
+        });
+    </script>
+}

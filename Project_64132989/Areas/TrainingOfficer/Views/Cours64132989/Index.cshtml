@@ -53,6 +53,163 @@
     </thead>
 </table>
 
+<!-- Modal Create -->
+<div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createCourseModalLabel">Thêm học phần mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createCourseForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="course_id" class="form-label required">Mã học phần</label>
+                                <input type="text" class="form-control" id="course_id" name="course_id" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="course_name" class="form-label required">Tên học phần</label>
+                                <input type="text" class="form-control" id="course_name" name="course_name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="department_id" class="form-label required">Khoa</label>
+                                <select class="form-select" id="department_id" name="department_id" required>
+                                    <option value="">Chọn khoa</option>
+                                    @foreach (var dept in ViewBag.DepartmentsList)
+                                    {
+                                        <option value="@dept.department_id">@dept.department_name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="credits" class="form-label required">Số tín chỉ</label>
+                                <input type="number" class="form-control" id="credits" name="credits" required min="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="course_type" class="form-label required">Loại học phần</label>
+                                <select class="form-select" id="course_type" name="course_type" required>
+                                    <option value="">Chọn loại học phần</option>
+                                    <option value="1">Bắt buộc</option>
+                                    <option value="2">Tự chọn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="prerequisite_course_id" class="form-label">Học phần tiên quyết</label>
+                                <select class="form-select " id="prerequisite_course_id" name="prerequisite_course_id">
+                                    <option value="">Chọn học phần tiên quyết</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="submitCreateCourse">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit -->
+<div class="modal fade" id="editCourseModal" tabindex="-1" aria-labelledby="editCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editCourseModalLabel">Chỉnh sửa học phần</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCourseForm">
+                    <input type="hidden" id="edit_course_id" name="course_id">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label required">Mã học phần</label>
+                                <input type="text" class="form-control" id="edit_course_id_display" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_course_name" class="form-label required">Tên học phần</label>
+                                <input type="text" class="form-control" id="edit_course_name" name="course_name" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_department_id" class="form-label required">Khoa</label>
+                                <select class="form-select" id="edit_department_id" name="department_id" required>
+                                    <option value="">Chọn khoa</option>
+                                    @foreach (var dept in ViewBag.DepartmentsList)
+                                    {
+                                        <option value="@dept.department_id">@dept.department_name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_credits" class="form-label required">Số tín chỉ</label>
+                                <input type="number" class="form-control" id="edit_credits" name="credits" required min="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_course_type" class="form-label required">Loại học phần</label>
+                                <select class="form-select" id="edit_course_type" name="course_type" required>
+                                    <option value="">Chọn loại học phần</option>
+                                    <option value="1">Bắt buộc</option>
+                                    <option value="2">Tự chọn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="edit_prerequisite_course_id" class="form-label">Học phần tiên quyết</label>
+                                <select class="form-select" id="edit_prerequisite_course_id" name="prerequisite_course_id">
+                                    <option value="">Chọn học phần tiên quyết</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="edit_description" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" id="submitEditCourse">Lưu thay đổi</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/bootstrap-table.min.css">
 
@@ -62,6 +219,10 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Thêm sau các CDN đã có -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script>
         var $table = $('#coursesTable');
@@ -102,11 +263,11 @@
             dropdown.dataset.courseId = courseId;
             dropdown.style.position = 'absolute';
             dropdown.style.zIndex = '1100';
-            dropdown.innerHTML = `
+           dropdown.innerHTML = `
                 <a class="dropdown-item" href="@Url.Action("Details", "Cours64132989")/${courseId}">
                     <i class="bi bi-info-circle me-2"></i>Chi tiết
                 </a>
-                <a class="dropdown-item" href="@Url.Action("Edit", "Cours64132989")/${courseId}">
+                <a class="dropdown-item" href="javascript:void(0);" onclick="editCourse('${courseId}')">
                     <i class="bi bi-pencil me-2"></i>Chỉnh sửa
                 </a>
                 <a class="dropdown-item" href="javascript:void(0);" onclick="deleteCourse('${courseId}')" style="color: red;">
@@ -139,6 +300,54 @@
             setTimeout(() => {
                 document.addEventListener('click', closeDropdown);
             }, 0);
+        }
+
+        // Hàm xử lý edit course và load dữ liệu vào form
+        function editCourse(courseId) {
+            $.ajax({
+                url: '@Url.Action("GetCourseData", "Cours64132989")',
+                type: 'GET',
+                data: { id: courseId },
+                success: function(response) {
+                    if (response.success) {
+                        var course = response.data;
+                        // Gán giá trị cho form
+                        $('#edit_course_id').val(course.course_id);
+                        $('#edit_course_id_display').val(course.course_id);
+                        $('#edit_course_name').val(course.course_name);
+                        $('#edit_department_id').val(course.department_id);
+                        $('#edit_credits').val(course.credits);
+                        $('#edit_course_type').val(course.course_type);
+                        $('#edit_description').val(course.description);
+
+                        // Xử lý học phần tiên quyết
+                        if (course.prerequisite_course_id) {
+                            var prerequisiteOption = new Option(
+                                course.prerequisite_course_id + ' - ' + course.prerequisite_course_name,
+                                course.prerequisite_course_id,
+                                true,
+                                true
+                            );
+                            $('#edit_prerequisite_course_id')
+                                .empty()
+                                .append(prerequisiteOption)
+                                .trigger('change');
+                        } else {
+                            $('#edit_prerequisite_course_id')
+                                .val(null)
+                                .trigger('change');
+                        }
+
+                        // Hiển thị modal
+                        $('#editCourseModal').modal('show');
+                    } else {
+                        Swal.fire('Lỗi!', response.message || 'Không thể tải thông tin học phần.', 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Không thể tải thông tin học phần.', 'error');
+                }
+            });
         }
 
         function deleteCourse(courseId) {
@@ -212,7 +421,7 @@
                     $.ajax({
                         url: '@Url.Action("DeleteMultiple", "Cours64132989")',
                         type: 'POST',
-                        data: { courseIds: courseIds },
+                        data: { ids: courseIds },
                         success: function (response) {
                             if (response.success) {
                                 Swal.fire('Đã xóa!', 'Các môn học đã chọn đã được xóa thành công.', 'success');
@@ -228,5 +437,273 @@
                 }
             });
         });
+
+        $('a[href="@Url.Action("Create", "Cours64132989")"]').on('click', function(e) {
+            e.preventDefault();
+            $('#createCourseModal').modal('show');
+        });
+
+        // Xử lý submit form
+        $('#submitCreateCourse').click(function() {
+            var formData = $('#createCourseForm').serialize();
+
+            console.log(formData);
+
+            $.ajax({
+                url: '@Url.Action("Create", "Cours64132989")',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: response.message,
+                            icon: 'success'
+                        }).then(() => {
+                            $('#createCourseModal').modal('hide');
+                            $('#coursesTable').bootstrapTable('refresh');
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: response.message,
+                            icon: 'error'
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Có lỗi xảy ra trong quá trình xử lý.',
+                        icon: 'error'
+                    });
+                }
+            });
+        });
+
+        // Khởi tạo Select2 cho học phần tiên quyết
+        $(function () {
+            $('#prerequisite_course_id').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Tìm kiếm học phần...',
+                allowClear: true,
+                dropdownParent: $('#createCourseModal'),
+                ajax: {
+                    url: '@Url.Action("GetCourseList", "Cours64132989")',
+                    type: 'POST', // Đổi thành POST
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            offset: (params.page || 0) * 10,
+                            limit: 10,
+                            search: params.term || '',
+                            sort: 'courseId',
+                            order: 'asc',
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() // Thêm token bảo mật
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 0;
+
+                        return {
+                            results: data.rows.map(function(course) {
+                                return {
+                                    id: course.courseId,
+                                    text: course.courseId + ' - ' + course.courseName,
+                                    data: course // lưu thêm data gốc nếu cần
+                                };
+                            }),
+                            pagination: {
+                                more: data.total > ((params.page + 1) * 10)
+                            }
+                        };
+                    },
+                    cache: true,
+                    beforeSend: function(xhr) {
+                        // Thêm header bảo mật nếu cần
+                        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                    }
+                },
+                minimumInputLength: 1,
+                language: {
+                    inputTooShort: function() {
+                        return 'Vui lòng nhập ít nhất 1 ký tự để tìm kiếm';
+                    },
+                    searching: function() {
+                        return 'Đang tìm kiếm...';
+                    },
+                    noResults: function() {
+                        return 'Không tìm thấy kết quả';
+                    }
+                },
+                templateResult: formatCourse,
+                templateSelection: formatCourse
+            });
+
+            // Format hiển thị kết quả tìm kiếm
+            function formatCourse(course) {
+                if (course.loading) {
+                    return 'Đang tìm kiếm...';
+                }
+
+                if (!course.id) {
+                    return course.text;
+                }
+
+                return $(`<div class="select2-result-course">
+                            <div class="select2-result-course__id">${course.id}</div>
+                            <div class="select2-result-course__name">${course.text.split(' - ')[1]}</div>
+                         </div>`);
+            }
+
+            // Reset Select2 khi đóng modal
+            $('#createCourseModal').on('hidden.bs.modal', function () {
+                $('#prerequisite_course_id').val(null).trigger('change');
+            });
+
+            $('#edit_prerequisite_course_id').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Tìm kiếm học phần...',
+                allowClear: true,
+                dropdownParent: $('#editCourseModal'),
+                ajax: {
+                    url: '@Url.Action("GetCourseList", "Cours64132989")',
+                    type: 'POST',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            offset: (params.page || 0) * 10,
+                            limit: 10,
+                            search: params.term || '',
+                            sort: 'courseId',
+                            order: 'asc',
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 0;
+                        return {
+                            results: data.rows.map(function(course) {
+                                return {
+                                    id: course.courseId,
+                                    text: course.courseId + ' - ' + course.courseName,
+                                    data: course
+                                };
+                            }),
+                            pagination: {
+                                more: data.total > ((params.page + 1) * 10)
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1,
+                language: {
+                    inputTooShort: function() {
+                        return 'Vui lòng nhập ít nhất 1 ký tự để tìm kiếm';
+                    },
+                    searching: function() {
+                        return 'Đang tìm kiếm...';
+                    },
+                    noResults: function() {
+                        return 'Không tìm thấy kết quả';
+                    }
+                },
+                templateResult: formatCourse,
+                templateSelection: formatCourse
+            });
+
+
+
+            $('#submitEditCourse').click(function() {
+                var formData = $('#editCourseForm').serialize();
+
+                $.ajax({
+                    url: '@Url.Action("Edit", "Cours64132989")',
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: response.message,
+                                icon: 'success'
+                            }).then(() => {
+                                $('#editCourseModal').modal('hide');
+                                $('#coursesTable').bootstrapTable('refresh');
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: response.message,
+                                icon: 'error'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            title: 'Lỗi!',
+                            text: 'Có lỗi xảy ra trong quá trình xử lý.',
+                            icon: 'error'
+                        });
+                    }
+                });
+            });
+
+            $('#editCourseModal').on('hidden.bs.modal', function () {
+                $('#editCourseForm')[0].reset();
+                $('#edit_prerequisite_course_id').val(null).trigger('change');
+            });
+        });
     </script>
+}
+
+@section Styles {
+    <style>
+        /* Select2 custom styling */
+        .select2-container--bootstrap-5 {
+            z-index: 1056 !important;
+        }
+
+            .select2-container--bootstrap-5 .select2-selection {
+                border: 1px solid #dee2e6;
+                border-radius: 6px;
+                padding: 8px 12px; /* Tăng padding để làm phần hiển thị lớn hơn */
+                min-height: 60px; /* Chiều cao tối thiểu */
+            }
+
+        /* Kích thước và padding của dropdown */
+        .select2-dropdown {
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-width: 250px; /* Tăng độ rộng tối thiểu của dropdown */
+        }
+
+        /* Kích thước và khoảng cách của từng option */
+        .select2-container--bootstrap-5 .select2-results__option {
+            padding: 12px 16px; /* Tăng padding cho các item */
+            font-size: 16px; /* Tăng kích thước chữ */
+        }
+
+        /* Hiển thị item được chọn */
+        .select2-container--bootstrap-5 .select2-results__option--highlighted[aria-selected] {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .select2-result-course__id {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .select2-result-course__name {
+            color: #333;
+            font-size: 0.95em;
+        }
+    </style>
 }

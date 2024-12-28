@@ -24,6 +24,7 @@ namespace Project_64132989.Models.Data
         public virtual DbSet<StudentLearningPlan> StudentLearningPlans { get; set; }
         public virtual DbSet<Student> Students { get; set; }
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+        public virtual DbSet<TeacherAssignment> TeacherAssignments { get; set; }
         public virtual DbSet<Teacher> Teachers { get; set; }
         public virtual DbSet<TrainingProgramCours> TrainingProgramCourses { get; set; }
         public virtual DbSet<TrainingProgram> TrainingPrograms { get; set; }
@@ -85,6 +86,11 @@ namespace Project_64132989.Models.Data
 
             modelBuilder.Entity<Cours>()
                 .HasMany(e => e.StudentLearningPlans)
+                .WithRequired(e => e.Cours)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Cours>()
+                .HasMany(e => e.TeacherAssignments)
                 .WithRequired(e => e.Cours)
                 .WillCascadeOnDelete(false);
 
@@ -180,6 +186,14 @@ namespace Project_64132989.Models.Data
                 .HasForeignKey(e => e.student_id)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<TeacherAssignment>()
+                .Property(e => e.teacher_id)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<TeacherAssignment>()
+                .Property(e => e.course_id)
+                .IsUnicode(false);
+
             modelBuilder.Entity<Teacher>()
                 .Property(e => e.user_id)
                 .IsUnicode(false);
@@ -197,6 +211,12 @@ namespace Project_64132989.Models.Data
                 .HasMany(e => e.CourseOfferings)
                 .WithRequired(e => e.Teacher)
                 .HasForeignKey(e => e.teacher_user_id)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Teacher>()
+                .HasMany(e => e.TeacherAssignments)
+                .WithRequired(e => e.Teacher)
+                .HasForeignKey(e => e.teacher_id)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<TrainingProgramCours>()

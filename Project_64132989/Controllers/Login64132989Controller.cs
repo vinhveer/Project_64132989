@@ -23,6 +23,18 @@ namespace Project_64132989.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(LoginViewModel model)
         {
+            // Clear tất cả session
+            Session.Clear();
+            Session.Abandon();
+
+            // Xóa cookie authentication
+            if (Response.Cookies["AuthCookie"] != null)
+            {
+                var cookie = new HttpCookie("AuthCookie");
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(cookie);
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -117,6 +129,18 @@ namespace Project_64132989.Controllers
         [Authorize]
         public ActionResult Logout()
         {
+            // Clear tất cả session
+            Session.Clear();
+            Session.Abandon();
+
+            // Xóa cookie authentication
+            if (Response.Cookies["AuthCookie"] != null)
+            {
+                var cookie = new HttpCookie("AuthCookie");
+                cookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(cookie);
+            }
+
             // Đăng xuất bằng FormsAuthentication
             FormsAuthentication.SignOut();
 

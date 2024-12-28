@@ -1,14 +1,14 @@
-﻿using OfficeOpenXml.Style;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using Project_64132989.Models.Data;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.Ajax.Utilities;
 
 namespace Project_64132989.Areas.TrainingOfficer.Controllers
 {
@@ -19,8 +19,13 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
         // GET: TrainingOfficer/Cours64132989
         public ActionResult Index()
         {
-            var courses = db.Courses.Include(c => c.Cours1).Include(c => c.Department);
-            return View(courses.ToList());
+            // Lấy danh sách khoa
+            ViewBag.DepartmentsList = db.Departments.ToList();
+
+            // Lấy danh sách tất cả học phần
+            ViewBag.CoursesList = db.Courses.ToList();
+
+            return View();
         }
 
         [HttpPost]
@@ -155,92 +160,276 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
             return View(cours);
         }
 
-        // GET: TrainingOfficer/Cours64132989/Create
-        public ActionResult Create()
+        private object GetCoursData(Cours cours)
         {
-            ViewBag.prerequisite_course_id = new SelectList(db.Courses, "course_id", "course_name");
-            ViewBag.department_id = new SelectList(db.Departments, "department_id", "department_name");
-            return View();
+            return new
+            {
+                cours.course_id,
+                cours.course_name,
+                cours.credits,
+                departmentName = cours.Department?.department_name,
+                prerequisiteCourseName = cours.Cours1?.course_name,
+                cours.description,
+                cours.course_type,
+                cours.status
+            };
         }
 
-        // POST: TrainingOfficer/Cours64132989/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "course_id,course_name,description,credits,department_id,course_type,prerequisite_course_id,status")] Cours cours)
+        public JsonResult Create(Cours cours)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Courses.Add(cours);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+                // Kiểm tra trùng mã học phần
+                if (db.Courses.Any(c => c.course_id == cours.course_id))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Mã học phần này đã tồn tại"
+                    });
+                }
 
-            ViewBag.prerequisite_course_id = new SelectList(db.Courses, "course_id", "course_name", cours.prerequisite_course_id);
-            ViewBag.department_id = new SelectList(db.Departments, "department_id", "department_name", cours.department_id);
-            return View(cours);
+                if (ModelState.IsValid)
+                {
+                    // Gán thông tin người tạo và thời gian
+                    cours.status = 1; // Assuming 1 is active status
+
+                    db.Courses.Add(cours);
+                    db.SaveChanges();
+
+                    // Lấy thông tin học phần vừa tạo kèm thông tin liên quan
+                    var newCourse = db.Courses
+                        .Include(c => c.Department)
+                        .Include(c => c.Cours1)
+                        .FirstOrDefault(c => c.course_id == cours.course_id);
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Thêm học phần mới thành công",
+                        data = GetCoursData(newCourse)
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Dữ liệu không hợp lệ",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
-        // GET: TrainingOfficer/Cours64132989/Edit/5
-        public ActionResult Edit(string id)
+        [HttpGet]
+        public JsonResult GetCourseData(string id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                var course = db.Courses
+                    .Include(c => c.Department)
+                    .Include(c => c.Cours1)
+                    .FirstOrDefault(c => c.course_id == id);
+
+                if (course == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không tìm thấy học phần"
+                    }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Lấy danh sách học phần và khoa để tạo dropdown
+                var coursesList = db.Courses
+                    .Where(c => c.course_id != id) // Exclude current course
+                    .Select(c => new { c.course_id, c.course_name })
+                    .ToList();
+
+                var departmentsList = db.Departments
+                    .Select(d => new { d.department_id, d.department_name })
+                    .ToList();
+
+                return Json(new
+                {
+                    success = true,
+                    data = GetCoursData(course),
+                    coursesList = coursesList,
+                    departmentsList = departmentsList
+                }, JsonRequestBehavior.AllowGet);
             }
-            Cours cours = db.Courses.Find(id);
-            if (cours == null)
+            catch (Exception ex)
             {
-                return HttpNotFound();
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
             }
-            ViewBag.prerequisite_course_id = new SelectList(db.Courses, "course_id", "course_name", cours.prerequisite_course_id);
-            ViewBag.department_id = new SelectList(db.Departments, "department_id", "department_name", cours.department_id);
-            return View(cours);
         }
 
-        // POST: TrainingOfficer/Cours64132989/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "course_id,course_name,description,credits,department_id,course_type,prerequisite_course_id,status")] Cours cours)
+        public JsonResult Edit(Cours cours)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Entry(cours).State = EntityState.Modified;
+                if (ModelState.IsValid)
+                {
+                    var existingCourse = db.Courses.Find(cours.course_id);
+                    if (existingCourse == null)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Không tìm thấy học phần"
+                        });
+                    }
+
+                    // Cập nhật thông tin
+                    existingCourse.course_name = cours.course_name;
+                    existingCourse.description = cours.description;
+                    existingCourse.credits = cours.credits;
+                    existingCourse.department_id = cours.department_id;
+                    existingCourse.course_type = cours.course_type;
+                    existingCourse.prerequisite_course_id = cours.prerequisite_course_id;
+                    existingCourse.status = cours.status;
+
+                    db.Entry(existingCourse).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    // Lấy thông tin học phần sau khi cập nhật
+                    var updatedCourse = db.Courses
+                        .Include(c => c.Department)
+                        .Include(c => c.Cours1)
+                        .FirstOrDefault(c => c.course_id == cours.course_id);
+
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Cập nhật học phần thành công",
+                        data = GetCoursData(updatedCourse)
+                    });
+                }
+
+                return Json(new
+                {
+                    success = false,
+                    message = "Dữ liệu không hợp lệ",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // DELETE: TrainingOfficer/Cours64132989/Delete/5
+        [HttpPost]
+        public JsonResult Delete(string id)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(id))
+                {
+                    return Json(new { success = false, message = "ID không hợp lệ" });
+                }
+
+                var cours = db.Courses.Find(id);
+                if (cours == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy khóa học" });
+                }
+
+                // Kiểm tra xem có ràng buộc khóa ngoại không
+                var hasPrerequisites = db.Courses.Any(c => c.prerequisite_course_id == id);
+                var hasTeacherAssignments = db.TeacherAssignments.Any(ta => ta.course_id == id);
+
+                if (hasPrerequisites || hasTeacherAssignments)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không thể xóa khóa học này vì đang được sử dụng làm điều kiện tiên quyết hoặc đã được phân công giảng viên"
+                    });
+                }
+
+                db.Courses.Remove(cours);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Xóa khóa học thành công",
+                    deletedId = id
+                });
             }
-            ViewBag.prerequisite_course_id = new SelectList(db.Courses, "course_id", "course_name", cours.prerequisite_course_id);
-            ViewBag.department_id = new SelectList(db.Departments, "department_id", "department_name", cours.department_id);
-            return View(cours);
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi khi xóa khóa học: " + ex.Message
+                });
+            }
         }
 
-        // GET: TrainingOfficer/Cours64132989/Delete/5
-        public ActionResult Delete(string id)
+        // DELETE: TrainingOfficer/Cours64132989/DeleteMultiple
+        [HttpPost]
+        public JsonResult DeleteMultiple(string[] ids)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Cours cours = db.Courses.Find(id);
-            if (cours == null)
-            {
-                return HttpNotFound();
-            }
-            return View(cours);
-        }
+                if (ids == null || ids.Length == 0)
+                {
+                    return Json(new { success = false, message = "Không có ID nào được chọn" });
+                }
 
-        // POST: TrainingOfficer/Cours64132989/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(string id)
-        {
-            Cours cours = db.Courses.Find(id);
-            db.Courses.Remove(cours);
-            db.SaveChanges();
-            return RedirectToAction("Index");
+                // Kiểm tra các ràng buộc khóa ngoại
+                var prerequisiteConflicts = db.Courses
+                    .Where(c => ids.Contains(c.prerequisite_course_id))
+                    .Select(c => c.prerequisite_course_id)
+                    .Distinct()
+                    .ToList();
+
+                var teacherAssignmentConflicts = db.TeacherAssignments
+                    .Where(ta => ids.Contains(ta.course_id))
+                    .Select(ta => ta.course_id)
+                    .Distinct()
+                    .ToList();
+
+                // Nếu có bất kỳ ràng buộc nào
+                if (prerequisiteConflicts.Any() || teacherAssignmentConflicts.Any())
+                {
+                    var conflictIds = prerequisiteConflicts.Union(teacherAssignmentConflicts).ToList();
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Một số khóa học không thể xóa do đang được sử dụng làm điều kiện tiên quyết hoặc đã được phân công giảng viên",
+                        conflictIds = conflictIds
+                    });
+                }
+
+                // Thực hiện xóa
+                var coursesToDelete = db.Courses.Where(c => ids.Contains(c.course_id));
+                db.Courses.RemoveRange(coursesToDelete);
+                int rowsAffected = db.SaveChanges();
+
+                return Json(new
+                {
+                    success = true,
+                    message = $"Đã xóa thành công {rowsAffected} khóa học",
+                    deletedIds = ids
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi khi xóa nhiều khóa học: " + ex.Message
+                });
+            }
         }
 
         public ActionResult UploadCourseList()

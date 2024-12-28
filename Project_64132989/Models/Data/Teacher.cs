@@ -13,6 +13,7 @@ namespace Project_64132989.Models.Data
         {
             AdminClasses = new HashSet<AdminClass>();
             CourseOfferings = new HashSet<CourseOffering>();
+            TeacherAssignments = new HashSet<TeacherAssignment>();
         }
 
         [Key]
@@ -35,6 +36,9 @@ namespace Project_64132989.Models.Data
         public virtual ICollection<CourseOffering> CourseOfferings { get; set; }
 
         public virtual Department Department { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<TeacherAssignment> TeacherAssignments { get; set; }
 
         public virtual User User { get; set; }
     }

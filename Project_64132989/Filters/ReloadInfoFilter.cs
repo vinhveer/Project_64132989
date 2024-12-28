@@ -70,6 +70,11 @@ namespace Project_64132989.Filters
 
         private void LoadUserInfo(ActionExecutingContext filterContext, FormsIdentity formsIdentity)
         {
+            var session = filterContext.HttpContext.Session;
+
+            // Clear session cũ trước khi load data mới
+            session.Clear();
+
             var authTicket = formsIdentity.Ticket;
             string userData = authTicket.Name;
 
@@ -108,8 +113,6 @@ namespace Project_64132989.Filters
                 throw new InvalidOperationException("Học kỳ hiện tại không tồn tại.");
             }
 
-            // Lưu thông tin vào Session
-            var session = filterContext.HttpContext.Session;
             session["UserEmail"] = userInDb.email;
             session["UserFullName"] = $"{userProfile.last_name} {userProfile.first_name}";
             session["UserId"] = userInDb.user_id;

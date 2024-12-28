@@ -344,7 +344,8 @@ namespace Project_64132989.Areas.Admin.Controllers
                                 var student = new Student
                                 {
                                     user_id = userId,
-                                    program_id = program_id
+                                    program_id = program_id,
+                                    academic_status = 1
                                 };
 
                                 // Thêm dữ liệu vào các bảng
