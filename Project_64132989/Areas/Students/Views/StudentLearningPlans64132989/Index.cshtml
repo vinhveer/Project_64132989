@@ -203,9 +203,6 @@
             const dropdown = document.createElement('div');
             dropdown.className = 'dropdown-menu custom-action-dropdown show';
             dropdown.innerHTML = `
-                <a class="dropdown-item" href="@Url.Action("Details")/${planId}">
-                    <i class="bi bi-info-circle me-2"></i>Chi tiết
-                </a>
                 <button class="dropdown-item" href="javascript:void(0);" onclick="editPlan('${planId}')">
                     <i class="bi bi-pencil me-2"></i>Chỉnh sửa
                 </button>
@@ -229,6 +226,7 @@
         }
 
         function deletePlan(planId) {
+            console.log('Deleting plan', planId);
             Swal.fire({
                 title: 'Xác nhận xóa',
                 text: 'Bạn có chắc chắn muốn xóa kế hoạch học tập này?',

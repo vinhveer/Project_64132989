@@ -13,6 +13,7 @@ namespace Project_64132989.Models.Views
         [DataType(DataType.Password)]
         [StringLength(100, ErrorMessage = "Mật khẩu phải từ {2} ký tự.", MinimumLength = 6)]
         [Display(Name = "Mật khẩu mới")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$", ErrorMessage = "Mật khẩu phải chứa ít nhất một chữ thường, một chữ hoa, một số và một ký tự đặc biệt.")]
         public string NewPassword { get; set; }
 
         [DataType(DataType.Password)]

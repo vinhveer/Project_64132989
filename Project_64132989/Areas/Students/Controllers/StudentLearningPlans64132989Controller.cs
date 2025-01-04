@@ -11,6 +11,7 @@ using Project_64132989.Models.Data;
 
 namespace Project_64132989.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     public class StudentLearningPlans64132989Controller : Controller
     {
         private Model64132989DbContext db = new Model64132989DbContext();
@@ -18,6 +19,16 @@ namespace Project_64132989.Areas.Students.Controllers
         // GET: Students/StudentLearningPlans64132989
         public ActionResult Index()
         {
+
+            var semester_id = Session["SemesterId"];
+
+            var semesters = db.Semesters.Find(semester_id);
+
+            if (semesters.registration_start_date < DateTime.Now || semesters.registration_end_date > DateTime.Now)
+            {
+                return RedirectToAction("Error", "StudentCourseRegistrations64132989");
+            }
+
             var studentLearningPlans = db.StudentLearningPlans.Include(s => s.Cours).Include(s => s.Semester).Include(s => s.Student);
             return View(studentLearningPlans.ToList());
         }
@@ -114,6 +125,7 @@ namespace Project_64132989.Areas.Students.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
+        
         // GET: Students/StudentLearningPlans64132989/Details/5
         public ActionResult Details(long? id)
         {

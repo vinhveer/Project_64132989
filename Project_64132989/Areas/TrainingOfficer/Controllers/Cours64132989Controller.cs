@@ -12,6 +12,7 @@ using System.Web.Mvc;
 
 namespace Project_64132989.Areas.TrainingOfficer.Controllers
 {
+    [Authorize(Roles = "TrainingOfficer")]
     public class Cours64132989Controller : Controller
     {
         private Model64132989DbContext db = new Model64132989DbContext();
@@ -114,9 +115,7 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
                 {
                     total = total,
                     rows = courseList,
-                    success = true,
-                    currentUser = "vinhveer",
-                    currentDate = DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm:ss")
+                    success = true
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -344,6 +343,7 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
                 // Kiểm tra xem có ràng buộc khóa ngoại không
                 var hasPrerequisites = db.Courses.Any(c => c.prerequisite_course_id == id);
                 var hasTeacherAssignments = db.TeacherAssignments.Any(ta => ta.course_id == id);
+                var hasCourseOfferings = db.CourseOfferings.Any(co => co.course_id == id);
 
                 if (hasPrerequisites || hasTeacherAssignments)
                 {
@@ -351,6 +351,15 @@ namespace Project_64132989.Areas.TrainingOfficer.Controllers
                     {
                         success = false,
                         message = "Không thể xóa khóa học này vì đang được sử dụng làm điều kiện tiên quyết hoặc đã được phân công giảng viên"
+                    });
+                }
+
+                if (hasCourseOfferings)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không thể xóa khóa học này vì đã được mở lớp"
                     });
                 }
 

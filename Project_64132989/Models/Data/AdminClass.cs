@@ -16,21 +16,28 @@ namespace Project_64132989.Models.Data
 
         [Key]
         [StringLength(10)]
+        [Display(Name = "Mã lớp")]
+        [Required(ErrorMessage = "Vui lòng nhập mã lớp")]
         public string class_id { get; set; }
 
-        [Required]
         [StringLength(100)]
+        [Display(Name = "Tên lớp")]
+        [Required(ErrorMessage = "Vui lòng nhập tên lớp")]
         public string class_name { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Mã phòng ban chưa được chọn")]
         [StringLength(10)]
+        [Display(Name = "Mã phòng ban")]
         public string department_id { get; set; }
 
         [StringLength(10)]
+        [Display(Name = "Mã giáo viên chủ nhiệm")]
         public string advisor_teacher_id { get; set; }
 
+        [Display(Name = "Ngày tạo")]
         public DateTime? created_date { get; set; }
 
+        [Display(Name = "Trạng thái")]
         public byte? status { get; set; }
 
         public virtual Department Department { get; set; }

@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Thời khóa biểu";
+    Layout = "~/Areas/Students/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        .schedule-table th {
+            background-color: #f8f9fa;
+        }
+
+        .time-badge {
+            background-color: #17a2b8;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <h3 class="mb-4">Thời khóa biểu</h3>
+
+    <div class="card">
+        <div class="card-body">
+            <table id="scheduleTable" class="table table-bordered schedule-table">
+                <thead>
+                    <tr>
+                        <th>Thứ</th>
+                        <th>Mã HP</th>
+                        <th>Tên học phần</th>
+                        <th>Giảng viên</th>
+                        <th>Phòng</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#scheduleTable').DataTable({
+                ajax: {
+                    url: '@Url.Action("GetMySchedule")',
+                    dataSrc: 'data'
+                },
+                columns: [
+                    {
+                        data: 'day_of_week',
+                        render: function(data) {
+                            const days = {
+                                2: 'Thứ hai',
+                                3: 'Thứ ba',
+                                4: 'Thứ tư',
+                                5: 'Thứ năm',
+                                6: 'Thứ sáu',
+                                7: 'Thứ bảy',
+                                8: 'Chủ nhật'
+                            };
+                            return days[data] || `Thứ ${data}`;
+                        }
+                    },
+                    { data: 'course_id' },
+                    { data: 'course_name' },
+                    { data: 'teacher_name' },
+                    { data: 'room_name' },
+                    {
+                        data: null,
+                        render: function(data) {
+                            return `<span class="time-badge">
+                                     ${data.start_time} - ${data.end_time}
+                                   </span>`;
+                        }
+                    }
+                ],
+                order: [[0, 'asc'], [5, 'asc']], // Sắp xếp theo thứ và giờ học
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json'
+                }
+            });
+        });
+    </script>
+}

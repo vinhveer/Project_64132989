@@ -16,9 +16,9 @@ namespace Project_64132989.Models.Data
         public virtual DbSet<CourseOffering> CourseOfferings { get; set; }
         public virtual DbSet<Cours> Courses { get; set; }
         public virtual DbSet<Department> Departments { get; set; }
-        public virtual DbSet<Grade> Grades { get; set; }
         public virtual DbSet<Profile> Profiles { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
+        public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Semester> Semesters { get; set; }
         public virtual DbSet<StudentCourseRegistration> StudentCourseRegistrations { get; set; }
         public virtual DbSet<StudentLearningPlan> StudentLearningPlans { get; set; }
@@ -26,7 +26,7 @@ namespace Project_64132989.Models.Data
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<TeacherAssignment> TeacherAssignments { get; set; }
         public virtual DbSet<Teacher> Teachers { get; set; }
-        public virtual DbSet<TrainingProgramCours> TrainingProgramCourses { get; set; }
+        public virtual DbSet<TimeSlot> TimeSlots { get; set; }
         public virtual DbSet<TrainingProgram> TrainingPrograms { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
@@ -56,6 +56,11 @@ namespace Project_64132989.Models.Data
             modelBuilder.Entity<CourseOffering>()
                 .Property(e => e.teacher_user_id)
                 .IsUnicode(false);
+
+            modelBuilder.Entity<CourseOffering>()
+                .HasMany(e => e.Schedules)
+                .WithRequired(e => e.CourseOffering)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<CourseOffering>()
                 .HasMany(e => e.StudentCourseRegistrations)
@@ -94,11 +99,6 @@ namespace Project_64132989.Models.Data
                 .WithRequired(e => e.Cours)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<Cours>()
-                .HasMany(e => e.TrainingProgramCourses)
-                .WithRequired(e => e.Cours)
-                .WillCascadeOnDelete(false);
-
             modelBuilder.Entity<Department>()
                 .Property(e => e.department_id)
                 .IsUnicode(false);
@@ -123,16 +123,16 @@ namespace Project_64132989.Models.Data
                 .WithRequired(e => e.Department)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<Grade>()
-                .Property(e => e.score)
-                .HasPrecision(5, 2);
-
             modelBuilder.Entity<Profile>()
                 .Property(e => e.user_id)
                 .IsUnicode(false);
 
             modelBuilder.Entity<Profile>()
                 .Property(e => e.phone_number)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<Schedule>()
+                .Property(e => e.created_by)
                 .IsUnicode(false);
 
             modelBuilder.Entity<Semester>()
@@ -148,11 +148,6 @@ namespace Project_64132989.Models.Data
             modelBuilder.Entity<StudentCourseRegistration>()
                 .Property(e => e.student_id)
                 .IsUnicode(false);
-
-            modelBuilder.Entity<StudentCourseRegistration>()
-                .HasMany(e => e.Grades)
-                .WithRequired(e => e.StudentCourseRegistration)
-                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<StudentLearningPlan>()
                 .Property(e => e.course_id)
@@ -219,13 +214,14 @@ namespace Project_64132989.Models.Data
                 .HasForeignKey(e => e.teacher_id)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<TrainingProgramCours>()
-                .Property(e => e.program_id)
+            modelBuilder.Entity<TimeSlot>()
+                .Property(e => e.session)
                 .IsUnicode(false);
 
-            modelBuilder.Entity<TrainingProgramCours>()
-                .Property(e => e.course_id)
-                .IsUnicode(false);
+            modelBuilder.Entity<TimeSlot>()
+                .HasMany(e => e.Schedules)
+                .WithRequired(e => e.TimeSlot)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<TrainingProgram>()
                 .Property(e => e.program_id)
@@ -241,11 +237,6 @@ namespace Project_64132989.Models.Data
 
             modelBuilder.Entity<TrainingProgram>()
                 .HasMany(e => e.Students)
-                .WithRequired(e => e.TrainingProgram)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<TrainingProgram>()
-                .HasMany(e => e.TrainingProgramCourses)
                 .WithRequired(e => e.TrainingProgram)
                 .WillCascadeOnDelete(false);
 

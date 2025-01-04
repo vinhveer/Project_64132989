@@ -1,0 +1,250 @@
+﻿@model Project_64132989.Models.Data.CourseOffering
+
+@{
+    ViewBag.Title = "Tạo lớp học phần mới";
+    Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
+}
+
+<p>
+    @Html.ActionLink(" ", "Index", null, new { @class = "btn custom-btn bi bi-arrow-left fs-6" })
+</p>
+
+<h3 class="mb-4 mt-4">@ViewBag.Title</h3>
+
+@using (Html.BeginForm("Create", "CourseOfferings64132989", FormMethod.Post, new { @class = "row g-3 needs-validation" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.semester_id, "Học kỳ", new { @class = "form-label" })
+        @Html.DropDownList("semester_id", null, "-- Chọn học kỳ --", new { @class = "form-select", required = "required" })
+        @Html.ValidationMessageFor(m => m.semester_id, "", new { @class = "text-danger" })
+    </div>
+
+    <!-- Trong phần form -->
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="course_id" class="form-label required">Học phần</label>
+            <select class="form-select" id="course_id" name="course_id" required>
+                <option value="">Chọn học phần</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <label for="teacher_user_id" class="form-label required">Giảng viên</label>
+            <select class="form-select" id="teacher_user_id" name="teacher_user_id" required>
+                <option value="">Chọn giảng viên</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.room_id, "Phòng học", new { @class = "form-label" })
+        @Html.DropDownList("room_id", null, "-- Chọn phòng học --", new { @class = "form-select", required = "required" })
+        @Html.ValidationMessageFor(m => m.room_id, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.max_capacity, "Sĩ số tối đa", new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.max_capacity, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.max_capacity, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="col-md-6">
+        @Html.LabelFor(m => m.status, "Trạng thái", new { @class = "form-label" })
+        @Html.DropDownListFor(m => m.status, new[] {
+            new SelectListItem { Value = "1", Text = "Hoạt động" },
+            new SelectListItem { Value = "0", Text = "Không hoạt động" }
+        }, new { @class = "form-select" })
+    </div>
+
+    <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-2"></i>Tạo lớp học phần mới
+        </button>
+    </div>
+}
+
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(function () {
+            // Khởi tạo Select2 cho học phần
+            $('#course_id').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Tìm kiếm học phần...',
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("GetCourseList", "Cours64132989")',
+                    type: 'POST',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            offset: (params.page || 0) * 10,
+                            limit: 10,
+                            search: params.term || '',
+                            sort: 'courseId',
+                            order: 'asc'
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 0;
+                        return {
+                            results: data.rows.map(function(course) {
+                                return {
+                                    id: course.courseId,
+                                    text: course.courseId + ' - ' + course.courseName,
+                                    data: course
+                                };
+                            }),
+                            pagination: {
+                                more: data.total > ((params.page + 1) * 10)
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1
+            });
+
+            // Khởi tạo Select2 cho giảng viên
+            $('#teacher_user_id').select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                placeholder: 'Tìm kiếm giảng viên...',
+                allowClear: true,
+                ajax: {
+                    url: '@Url.Action("GetTeacherList", "GetUserAPI64132989", new { area = "TrainingOfficer" })',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            offset: (params.page || 0) * 10,
+                            limit: 10,
+                            search: params.term || '',
+                            sort: 'userId',
+                            order: 'asc'
+                        };
+                    },
+                    processResults: function (data, params) {
+                        params.page = params.page || 0;
+                        return {
+                            results: data.rows.map(function(teacher) {
+                                return {
+                                    id: teacher.userId,
+                                    text: teacher.userId + ' - ' + teacher.fullName,
+                                    data: teacher
+                                };
+                            }),
+                            pagination: {
+                                more: data.total > ((params.page + 1) * 10)
+                            }
+                        };
+                    },
+                    cache: true
+                },
+                minimumInputLength: 1
+            });
+
+            // Xử lý khi phòng học thay đổi
+            $('#room_id').change(function() {
+                var selectedRoom = $(this).find('option:selected');
+                if (selectedRoom.val()) {
+                    var capacity = parseInt(selectedRoom.text().match(/\d+/)[0]);
+                    $('#max_capacity').attr({
+                        'max': capacity,
+                        'required': 'required'
+                    }).val(capacity);
+                }
+            });
+
+            // Xử lý submit form
+            $('.needs-validation').on('submit', function(e) {
+                e.preventDefault();
+
+                var form = $(this);
+                if (!form[0].checkValidity()) {
+                    form.addClass('was-validated');
+                    return;
+                }
+
+                // Thêm created_date và created_by
+                var formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Thành công!',
+                                text: 'Đã tạo lớp học phần mới.',
+                                icon: 'success'
+                            }).then((result) => {
+                                window.location.href = '@Url.Action("Index", "CourseOfferings64132989")';
+                            });
+                        } else {
+                            Swal.fire('Lỗi!', response.message || 'Có lỗi xảy ra.', 'error');
+                        }
+                    },
+                    error: function() {
+                        Swal.fire('Lỗi!', 'Có lỗi xảy ra trong quá trình xử lý.', 'error');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        /* Select2 custom styling */
+        .select2-container--bootstrap-5 {
+            z-index: 1056 !important;
+        }
+
+            .select2-container--bootstrap-5 .select2-selection {
+                border: 1px solid #dee2e6;
+                border-radius: 6px;
+                padding: 8px 12px;
+                min-height: 60px;
+            }
+
+        .select2-dropdown {
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-width: 250px;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option {
+            padding: 12px 16px;
+            font-size: 16px;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option--highlighted[aria-selected] {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .select2-result-course__id {
+            color: #666;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .select2-result-course__name {
+            color: #333;
+            font-size: 0.95em;
+        }
+    </style>
+}

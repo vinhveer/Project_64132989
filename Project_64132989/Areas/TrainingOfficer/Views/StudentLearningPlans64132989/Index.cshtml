@@ -3,8 +3,6 @@
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<btn class="btn custom-btn mb-4">Thực hiện quá trình xếp lớp tự động</btn>
-
 <h4 class="mb-3">Danh sách kế hoạch học tập sinh viên</h4>
 
     <select class="form-select form-control" id="semesterFilter">
@@ -228,9 +226,6 @@
             dropdown.className = 'dropdown-menu custom-action-dropdown show';
             dropdown.dataset.planId = planId; // Lưu planId để check khi click
             dropdown.innerHTML = `
-                <a class="dropdown-item" href="@Url.Action("Details")/${planId}">
-                    <i class="bi bi-info-circle me-2"></i>Chi tiết
-                </a>
                 <button class="dropdown-item" onclick="editPlan('${planId}')">
                     <i class="bi bi-pencil me-2"></i>Chỉnh sửa
                 </button>

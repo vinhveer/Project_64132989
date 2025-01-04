@@ -1,10 +1,239 @@
-﻿
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "Dashboard";
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h5 class="mb-1">Xin chào</h5>
-    <h3>@Session["UserFullName"]</h3>
+
+<h5 class="mb-1">Xin chào</h5>
+<h3 class="mb-4">@Session["UserFullName"]</h3>
+
+<!-- Row 2 - Department Statistics -->
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-bar-chart-steps me-1"></i>
+                Thống kê sinh viên theo khoa
+            </div>
+            <div class="card-body">
+                <canvas id="studentsByDepartmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-bar-chart-line-fill me-1"></i>
+                Thống kê giảng viên theo khoa
+            </div>
+            <div class="card-body">
+                <canvas id="teachersByDepartmentChart"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Row 1 - User Statistics -->
+<div class="row mt-4">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-pie-chart-fill me-1"></i>
+                Thống kê người dùng theo vai trò
+            </div>
+            <div class="card-body">
+                <canvas id="userRoleChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-bar-chart-fill me-1"></i>
+                Thống kê tài khoản theo giới tính
+            </div>
+            <div class="card-body">
+                <canvas id="accountsByRoleChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Row 3 - Training Program Statistics -->
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-graph-up me-1"></i>
+                Thống kê sinh viên theo chương trình đào tạo
+            </div>
+            <div class="card-body">
+                <canvas id="studentsByProgramChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script>
+        // Hàm helper để tạo màu ngẫu nhiên
+        function getRandomColors(count) {
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                colors.push(`hsla(${Math.random() * 360}, 70%, 50%, 0.8)`);
+            }
+            return colors;
+        }
+
+        // 1. Biểu đồ người dùng theo vai trò
+        function loadUserRoleChart() {
+            $.get('@Url.Action("GetUserStatistics")', function(data) {
+                const ctx = document.getElementById('userRoleChart');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Sinh viên', 'Giảng viên', 'Đào tạo', 'Admin'],
+                        datasets: [{
+                            data: [data.Students, data.Teachers, data.TrainingOfficers, data.Admins],
+                            backgroundColor: getRandomColors(4)
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Phân bố người dùng theo vai trò'
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // 2. Biểu đồ sinh viên theo khoa
+        function loadStudentsByDepartmentChart() {
+            $.get('@Url.Action("GetStudentsByDepartmentAndGender")', function(data) {
+                const ctx = document.getElementById('studentsByDepartmentChart');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.Department),
+                        datasets: [
+                            {
+                                label: 'Nam',
+                                data: data.map(item => item.Male),
+                                backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                            },
+                            {
+                                label: 'Nữ',
+                                data: data.map(item => item.Female),
+                                backgroundColor: 'rgba(255, 99, 132, 0.8)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { stacked: true },
+                            y: { stacked: true }
+                        }
+                    }
+                });
+            });
+        }
+
+        // 3. Biểu đồ giảng viên theo khoa
+        function loadTeachersByDepartmentChart() {
+            $.get('@Url.Action("GetTeachersByDepartmentAndGender")', function(data) {
+                const ctx = document.getElementById('teachersByDepartmentChart');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.Department),
+                        datasets: [
+                            {
+                                label: 'Nam',
+                                data: data.map(item => item.Male),
+                                backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                            },
+                            {
+                                label: 'Nữ',
+                                data: data.map(item => item.Female),
+                                backgroundColor: 'rgba(255, 99, 132, 0.8)'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { stacked: true },
+                            y: { stacked: true }
+                        }
+                    }
+                });
+            });
+        }
+
+        // 4. Biểu đồ tài khoản theo vai trò
+        function loadAccountsByRoleChart() {
+            $.get('@Url.Action("GetAccountByGender")', function(data) {
+                const ctx = document.getElementById('accountsByRoleChart');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.map(item => item.Gender),
+                        datasets: [{
+                            data: data.map(item => item.Count),
+                            backgroundColor: getRandomColors(data.length)
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Phân bố tài khoản theo giới tính'
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // 5. Biểu đồ sinh viên theo chương trình đào tạo
+        function loadStudentsByProgramChart() {
+            $.get('@Url.Action("GetStudentsByTrainingProgram")', function(data) {
+                const ctx = document.getElementById('studentsByProgramChart');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.map(item => item.ProgramName),
+                        datasets: [{
+                            label: 'Số lượng sinh viên',
+                            data: data.map(item => item.StudentCount),
+                            backgroundColor: getRandomColors(data.length)
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Load tất cả biểu đồ khi trang được tải
+        $(document).ready(function() {
+            loadUserRoleChart();
+            loadStudentsByDepartmentChart();
+            loadTeachersByDepartmentChart();
+            loadAccountsByRoleChart();
+            loadStudentsByProgramChart();
+        });
+    </script>
+}

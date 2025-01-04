@@ -11,8 +11,8 @@
             <div class="card shadow border-0">
                 <div class="card-body p-4">
                     <!-- Logo (Optional) -->
-                    <div class="text-center mb-4">
-                        <img src="@Url.Content("~/Assets/ntu.svg")" alt="Logo" class="img-fluid rounded-circle m-5 mt-3 mb-3" style="height: 8em" />
+                    <div class="mb-4">
+                        <img src="@Url.Content("~/Assets/ntu.svg")" alt="Logo" class="img-fluid rounded-circle mt-3 mb-3" style="height: 8em" />
                         <h4 class="fw-semibold">Chào mừng bạn</h4>
                         <p class="text-muted">Đăng nhập hệ thống để tiếp tục</p>
                     </div>
@@ -31,14 +31,14 @@
                     {
                         @Html.AntiForgeryToken()
                         <!-- Email Field -->
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 fs-6">
                             @Html.TextBoxFor(model => model.Email, new { @class = "form-control", type = "email", placeholder = "Email address", required = "required", id = "email" })
-                            <label for="email">Email hoặc ký danh</label>
+                            <label for="email">Email</label>
                             @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
                         </div>
 
                         <!-- Password Field -->
-                        <div class="form-floating mb-3">
+                        <div class="form-floating mb-3 fs-6">
                             @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = "Password", required = "required", id = "password" })
                             <label for="password">Mật khẩu</label>
                             @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
@@ -51,13 +51,13 @@
                         </div>
 
                         <!-- Submit Button -->
-                        <div class="d-grid mb-3">
+                        <div class="">
                             <button type="submit" class="btn btn-primary p-3 fw-semibold">Đăng nhập</button>
                         </div>
                     }
 
                     <!-- Additional Links -->
-                    <div class="text-center">
+                    <div class="mt-3">
                         <a href="@Url.Action("ForgotPassword", "Portal64132989")" class="text-decoration-none">Bạn quên mật khẩu?</a>
                     </div>
                 </div>
@@ -65,164 +65,3 @@
         </div>
     </div>
 </div>
-
-@section Styles {
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        .background-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .background-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-        }
-
-            .background-slide.active {
-                opacity: 1;
-            }
-
-        /* Thêm overlay để làm mượt hơn */
-        .background-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.2); /* Điều chỉnh độ tối tùy ý */
-            z-index: -1;
-        }
-    </style>
-
-    <script>
-        class BackgroundSlideshow {
-            constructor(images) {
-                this.images = images;
-                this.currentIndex = 0;
-                this.slides = [];
-                this.init();
-            }
-
-            init() {
-                // Tạo container
-                const container = document.createElement('div');
-                container.className = 'background-container';
-                document.body.appendChild(container);
-
-                // Tạo overlay
-                const overlay = document.createElement('div');
-                overlay.className = 'background-overlay';
-                document.body.appendChild(overlay);
-
-                // Preload và tạo slides
-                this.images.forEach((src, index) => {
-                    const slide = document.createElement('div');
-                    slide.className = 'background-slide';
-                    slide.style.backgroundImage = `url(${src})`;
-                    container.appendChild(slide);
-                    this.slides.push(slide);
-
-                    // Preload image
-                    const img = new Image();
-                    img.src = src;
-                });
-
-                // Hiển thị slide đầu tiên
-                this.showSlide(0);
-            }
-
-            showSlide(index) {
-                // Ẩn slide hiện tại
-                this.slides[this.currentIndex].classList.remove('active');
-
-                // Hiển thị slide mới
-                this.currentIndex = index;
-                this.slides[this.currentIndex].classList.add('active');
-            }
-
-            next() {
-                const nextIndex = (this.currentIndex + 1) % this.slides.length;
-                this.showSlide(nextIndex);
-            }
-
-            random() {
-                let nextIndex;
-                do {
-                    nextIndex = Math.floor(Math.random() * this.slides.length);
-                } while (nextIndex === this.currentIndex);
-                this.showSlide(nextIndex);
-            }
-        }
-
-        // Khởi tạo khi trang tải xong
-        window.addEventListener('load', () => {
-            const backgrounds = [
-                '@Url.Content("~/Assets/background1.jpg")',
-                '@Url.Content("~/Assets/background2.jpg")',
-                '@Url.Content("~/Assets/background3.jpg")'
-            ];
-
-            const slideshow = new BackgroundSlideshow(backgrounds);
-
-            // Random background mỗi 7 giây
-            setInterval(() => slideshow.random(), 7000);
-
-            // Tùy chọn: Thêm nút điều khiển
-            const addControls = () => {
-                const controls = document.createElement('div');
-                controls.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    z-index: 1000;
-                    display: flex;
-                    gap: 10px;
-                `;
-
-                const nextButton = document.createElement('button');
-                nextButton.innerHTML = 'Next';
-                nextButton.onclick = () => slideshow.next();
-                nextButton.style.cssText = `
-                    padding: 10px 20px;
-                    border: none;
-                    border-radius: 5px;
-                    background: rgba(255, 255, 255, 0.8);
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                `;
-
-                const randomButton = document.createElement('button');
-                randomButton.innerHTML = 'Random';
-                randomButton.onclick = () => slideshow.random();
-                randomButton.style.cssText = nextButton.style.cssText;
-
-                controls.appendChild(nextButton);
-                controls.appendChild(randomButton);
-                document.body.appendChild(controls);
-            };
-
-            // Uncomment dòng dưới nếu muốn hiển thị nút điều khiển
-            // addControls();
-        });
-    </script>
-}

@@ -1,77 +1,54 @@
 ﻿@model Project_64132989.Models.Data.Cours
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Course Details";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-
-
-<h2>Details</h2>
-
-<div>
-    <h4>Cours</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Cours1.course_name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Cours1.course_name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Department.department_name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Department.department_name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.course_name)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.course_name)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.description)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.description)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.credits)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.credits)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.course_type)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.course_type)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.status)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.status)
-        </dd>
-
-    </dl>
+<div class="mb-4">
+    <a href="@Url.Action("Edit", new { id = Model.course_id })" class="btn custom-btn">
+        <i class="bi bi-pencil"></i> Chỉnh sửa
+    </a>
+    <a href="@Url.Action("Index")" class="btn custom-btn ms-2">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.course_id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<h3 class="mb-3">Chi tiết học phần @Html.DisplayFor(model => model.Cours1.course_id)</h3>
+
+
+
+<table class="table table-bordered table-striped">
+    <tbody>
+        <tr>
+            <th>Học phần tiên quyết</th>
+            <td>@Html.DisplayFor(model => model.Cours1.course_name)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Department.department_name)</th>
+            <td>@Html.DisplayFor(model => model.Department.department_name)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.course_name)</th>
+            <td>@Html.DisplayFor(model => model.course_name)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.description)</th>
+            <td>@Html.DisplayFor(model => model.description)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.credits)</th>
+            <td>@Html.DisplayFor(model => model.credits)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.course_type)</th>
+            <td>@Html.DisplayFor(model => model.course_type)</td>
+        </tr>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.status)</th>
+            <td>@Html.DisplayFor(model => model.status)</td>
+        </tr>
+    </tbody>
+</table>
+
+

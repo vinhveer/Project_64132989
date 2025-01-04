@@ -196,18 +196,18 @@
     <Compile Include="Areas\Admin\Controllers\TrainingOfficer64132989Controller.cs" />
     <Compile Include="Areas\Admin\Data\AddNewUserModel.cs" />
     <Compile Include="Areas\Admin\Data\ProfileChangePasswordViewModel.cs" />
-    <Compile Include="Areas\Students\Controllers\CourseOfferings64132989Controller.cs" />
     <Compile Include="Areas\Students\Controllers\Home64132989Controller.cs" />
+    <Compile Include="Areas\Students\Controllers\Schedules64132989Controller.cs" />
     <Compile Include="Areas\Students\Controllers\StudentCourseRegistrations64132989Controller.cs" />
     <Compile Include="Areas\Students\Controllers\StudentLearningPlans64132989Controller.cs" />
     <Compile Include="Areas\Students\StudentsAreaRegistration.cs" />
-    <Compile Include="Areas\Teachers\Controllers\Home64132989Controller.cs" />
-    <Compile Include="Areas\Teachers\TeachersAreaRegistration.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\AdminClasses64132989Controller.cs" />
     <Compile Include="Areas\Admin\Controllers\Departments64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\Cours64132989Controller.cs" />
+    <Compile Include="Areas\TrainingOfficer\Controllers\CourseOfferings64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\GetUserAPI64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\Home64132989Controller.cs" />
+    <Compile Include="Areas\TrainingOfficer\Controllers\Schedules64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\Semesters64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\StudentLearningPlans64132989Controller.cs" />
     <Compile Include="Areas\TrainingOfficer\Controllers\TeacherAssignments64132989Controller.cs" />
@@ -225,10 +225,10 @@
     <Compile Include="Models\Data\Cours.cs" />
     <Compile Include="Models\Data\CourseOffering.cs" />
     <Compile Include="Models\Data\Department.cs" />
-    <Compile Include="Models\Data\Grade.cs" />
     <Compile Include="Models\Data\Model64132989DbContext.cs" />
     <Compile Include="Models\Data\Profile.cs" />
     <Compile Include="Models\Data\Room.cs" />
+    <Compile Include="Models\Data\Schedule.cs" />
     <Compile Include="Models\Data\Semester.cs" />
     <Compile Include="Models\Data\Student.cs" />
     <Compile Include="Models\Data\StudentCourseRegistration.cs" />
@@ -236,8 +236,8 @@
     <Compile Include="Models\Data\sysdiagram.cs" />
     <Compile Include="Models\Data\Teacher.cs" />
     <Compile Include="Models\Data\TeacherAssignment.cs" />
+    <Compile Include="Models\Data\TimeSlot.cs" />
     <Compile Include="Models\Data\TrainingProgram.cs" />
-    <Compile Include="Models\Data\TrainingProgramCours.cs" />
     <Compile Include="Models\Data\User.cs" />
     <Compile Include="Models\Views\ChangePasswordViewModel.cs" />
     <Compile Include="Models\Views\ForgotPasswordViewModel.cs" />
@@ -246,9 +246,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\background2.jpg" />
-    <Content Include="Assets\background3.jpg" />
-    <Content Include="Assets\background1.jpg" />
     <Content Include="Assets\chuan-5-sao.png" />
     <Content Include="Assets\color-modes.js" />
     <Content Include="Assets\dashboard.css" />
@@ -305,7 +302,6 @@
     <Content Include="Areas\TrainingOfficer\Views\Semesters64132989\Edit.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\Semesters64132989\Index.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\TrainingPrograms64132989\Create.cshtml" />
-    <Content Include="Areas\TrainingOfficer\Views\TrainingPrograms64132989\Delete.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\TrainingPrograms64132989\Details.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\TrainingPrograms64132989\Edit.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\TrainingPrograms64132989\Index.cshtml" />
@@ -319,24 +315,18 @@
     <Content Include="Areas\Students\Views\web.config" />
     <Content Include="Areas\Students\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Students\Views\Home64132989\Index.cshtml" />
-    <Content Include="Areas\Students\Views\StudentLearningPlans64132989\Details.cshtml" />
     <Content Include="Areas\Students\Views\StudentLearningPlans64132989\Index.cshtml" />
-    <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Create.cshtml" />
-    <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Delete.cshtml" />
-    <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Details.cshtml" />
-    <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Edit.cshtml" />
     <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Index.cshtml" />
-    <Content Include="Areas\Students\Views\CourseOfferings64132989\Create.cshtml" />
-    <Content Include="Areas\Students\Views\CourseOfferings64132989\Delete.cshtml" />
-    <Content Include="Areas\Students\Views\CourseOfferings64132989\Details.cshtml" />
-    <Content Include="Areas\Students\Views\CourseOfferings64132989\Edit.cshtml" />
-    <Content Include="Areas\Students\Views\CourseOfferings64132989\Index.cshtml" />
-    <Content Include="Areas\Teachers\Views\web.config" />
-    <Content Include="Areas\Teachers\Views\Shared\_Layout.cshtml" />
-    <Content Include="Areas\Teachers\Views\Home64132989\Index.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\AdminClasses64132989\GetStudentList.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\StudentLearningPlans64132989\Index.cshtml" />
     <Content Include="Areas\TrainingOfficer\Views\TeacherAssignments64132989\Index.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\CourseOfferings64132989\Create.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\CourseOfferings64132989\Delete.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\CourseOfferings64132989\Details.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\CourseOfferings64132989\Edit.cshtml" />
+    <Content Include="Areas\TrainingOfficer\Views\CourseOfferings64132989\Index.cshtml" />
+    <Content Include="Areas\Students\Views\Schedules64132989\Index.cshtml" />
+    <Content Include="Areas\Students\Views\StudentCourseRegistrations64132989\Error.cshtml" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -372,8 +362,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Students\Data\" />
-    <Folder Include="Areas\Teachers\Data\" />
     <Folder Include="Areas\TrainingOfficer\Data\" />
     <Folder Include="Areas\TrainingOfficer\Views\GetUserAPI64132989\" />
     <Folder Include="Uploads\Avatar\" />

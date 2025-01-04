@@ -159,9 +159,13 @@ namespace Project_64132989.Areas.Admin.Controllers
                     return Json(new { success = false, message = "Không tìm thấy sinh viên" });
                 }
 
-                if (user.Profile != null)
+                if (user.Teacher != null)
                 {
                     _context.Teachers.Remove(user.Teacher);
+                }
+
+                if (user.Profile != null)
+                {
                     _context.Profiles.Remove(user.Profile);
                 }
 
@@ -175,7 +179,7 @@ namespace Project_64132989.Areas.Admin.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "Có lỗi xảy ra: " + ex.Message
+                    message = "Có lỗi xảy ra: " + ex.Message + ex.InnerException
                 });
             }
         }
@@ -201,9 +205,15 @@ namespace Project_64132989.Areas.Admin.Controllers
                 }
 
                 // Remove associated profiles first
+                foreach (var user in usersToDelete.Where(u => u.Student != null))
+                {
+                    _context.Students.Remove(user.Student);
+                    _context.Users.Remove(user);
+                }
+
+                // Remove associated profiles first
                 foreach (var user in usersToDelete.Where(u => u.Profile != null))
                 {
-                    _context.Teachers.Remove(user.Teacher);
                     _context.Profiles.Remove(user.Profile);
                 }
 

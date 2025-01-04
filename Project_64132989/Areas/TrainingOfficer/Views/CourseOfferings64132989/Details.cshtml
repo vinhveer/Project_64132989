@@ -1,0 +1,372 @@
+﻿@model Project_64132989.Models.Data.CourseOffering
+
+@{
+    ViewBag.Title = "Chi tiết lớp học phần";
+    Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
+    var timeSlots = ViewBag.TimeSlots as List<Project_64132989.Models.Data.TimeSlot>;
+}
+
+<div class="mb-3">
+    <a href="@Url.Action("Edit", new { id = Model.offering_id })" class="btn custom-btn">
+        <i class="bi bi-pencil"></i> Chỉnh sửa
+    </a>
+    <a href="@Url.Action("Index")" class="btn custom-btn ms-2">
+        <i class="bi bi-arrow-left"></i> Quay lại
+    </a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">Chi tiết lớp học phần @Model.course_id - Nhóm @Model.offering_id</h4>
+</div>
+
+<h5 class="card-title mb-3">Thông tin học phần</h5>
+
+<table class="table table-sm">
+    <tr>
+        <th style="width:35%">Tên học phần:</th>
+        <td>@Model.Cours.course_name</td>
+    </tr>
+    <tr>
+        <th>Học kỳ:</th>
+        <td>@Model.Semester.semester_name</td>
+    </tr>
+    <tr>
+        <th>Giảng viên:</th>
+        <td>@($"{Model.Teacher.User.Profile.first_name} {Model.Teacher.User.Profile.last_name}")</td>
+    </tr>
+    <tr>
+        <th>Phòng học:</th>
+        <td>@(Model.Room?.room_name ?? "Chưa thiết đặt phòng")</td>
+    </tr>
+    <tr>
+        <th>Sĩ số tối đa:</th>
+        <td>@Model.max_capacity sinh viên</td>
+    </tr>
+    <tr>
+        <th>Trạng thái:</th>
+        <td>
+            @if (Model.status == 1)
+            {
+                <span class="badge bg-success">Đang hoạt động</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Không hoạt động</span>
+            }
+        </td>
+    </tr>
+</table>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="card-title mb-0">Thời khóa biểu</h5>
+    <div>
+        <button type="button" class="btn custom-btn btn-sm" onclick="autoSchedule(@Model.offering_id, @Model.Cours.credits)">
+            <i class="bi bi-magic"></i> Tự động xếp lịch
+        </button>
+        <button type="button" class="btn custom-btn btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+            <i class="bi bi-plus-circle"></i> Thêm lịch học
+        </button>
+    </div>
+</div>
+
+<div id="scheduleTableContainer">
+    <!-- Bảng lịch học sẽ được load động bằng AJAX -->
+</div>
+
+<!-- Modal Thêm lịch học -->
+<div class="modal fade" id="addScheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm lịch học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Thứ</label>
+                    <select id="addDayOfWeek" class="form-select">
+                        <option value="2">Thứ 2</option>
+                        <option value="3">Thứ 3</option>
+                        <option value="4">Thứ 4</option>
+                        <option value="5">Thứ 5</option>
+                        <option value="6">Thứ 6</option>
+                        <option value="7">Thứ 7</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tiết học</label>
+                    <select id="addSlotId" class="form-select">
+                        @foreach (var slot in timeSlots)
+                        {
+                            <option value="@slot.slot_id">
+                                Tiết @slot.slot_id (@slot.start_time - @slot.end_time)
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="addSchedule()">Thêm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Sửa lịch học -->
+<div class="modal fade" id="editScheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sửa lịch học</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editScheduleId" />
+                <div class="mb-3">
+                    <label class="form-label">Thứ</label>
+                    <select id="editDayOfWeek" class="form-select">
+                        <option value="2">Thứ 2</option>
+                        <option value="3">Thứ 3</option>
+                        <option value="4">Thứ 4</option>
+                        <option value="5">Thứ 5</option>
+                        <option value="6">Thứ 6</option>
+                        <option value="7">Thứ 7</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tiết học</label>
+                    <select id="editSlotId" class="form-select">
+                        @foreach (var slot in timeSlots)
+                        {
+                            <option value="@slot.slot_id">
+                                Tiết @slot.slot_id (@slot.start_time - @slot.end_time)
+                            </option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="updateSchedule()">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Container for toasts -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+@section Scripts {
+    <script>
+        // Initialize modals
+        const addModal = new bootstrap.Modal(document.getElementById('addScheduleModal'));
+        const editModal = new bootstrap.Modal(document.getElementById('editScheduleModal'));
+
+        // Constants
+        const currentUser = 'trittntu';
+        const currentDate = '2024-12-29 20:14:45';
+
+        // Load schedules when document ready
+        $(document).ready(function() {
+            loadSchedules();
+        });
+
+        // Toast notification function
+        function showToast(type, message) {
+            const bgClass = type === 'success' ? 'bg-success' : 'bg-danger';
+            const toast = `
+                <div class="toast align-items-center ${bgClass} text-white" role="alert">
+                    <div class="d-flex">
+                        <div class="toast-body">${message}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>`;
+            $('.toast-container').append(toast);
+            const toastEl = $('.toast').last()[0];
+            const bsToast = new bootstrap.Toast(toastEl);
+            bsToast.show();
+
+            // Auto remove toast after hidden
+            $(toastEl).on('hidden.bs.toast', function() {
+                $(this).remove();
+            });
+        }
+
+        // Load schedules function
+        function loadSchedules() {
+            $.get('/TrainingOfficer/Schedules64132989/GetSchedules', {
+                offeringId: @Model.offering_id
+            })
+            .done(function(response) {
+                if (response.success) {
+                    renderScheduleTable(response.data);
+                } else {
+                    showToast('error', response.message);
+                }
+            })
+            .fail(function() {
+                showToast('error', 'Đã xảy ra lỗi khi tải dữ liệu');
+            });
+        }
+
+        // Helpers function để format thời gian
+        function formatTime(timeObj) {
+            const hours = timeObj.Hours.toString().padStart(2, '0');
+            const minutes = timeObj.Minutes.toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // Trong hàm renderScheduleTable, sửa lại phần hiển thị thời gian:
+        function renderScheduleTable(schedules) {
+            if (!schedules || schedules.length === 0) {
+                $('#scheduleTableContainer').html(`
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i> Chưa có thông tin thời khóa biểu cho lớp học phần này
+            </div>
+        `);
+                return;
+            }
+
+            const tableRows = schedules
+                .sort((a, b) => a.day_of_week - b.day_of_week || a.slot.slot_id - b.slot.slot_id)
+                .map(schedule => `
+            <tr>
+                <td class="text-center">Thứ ${schedule.day_of_week}</td>
+                <td class="text-center">Tiết ${schedule.slot.slot_id}</td>
+                <td class="text-center">${formatTime(schedule.slot.start_time)}</td>
+                <td class="text-center">${formatTime(schedule.slot.end_time)}</td>
+                <td class="text-center">${schedule.room_name || 'Chưa thiết đặt phòng'}</td>
+                <td class="text-center d-flex">
+                    <button type="button" class="btn btn-sm custom-btn"
+                            onclick="editSchedule(${schedule.schedule_id}, ${schedule.day_of_week}, ${schedule.slot.slot_id})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-danger ms-1"
+                            onclick="deleteSchedule(${schedule.schedule_id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+            $('#scheduleTableContainer').html(`
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle table-hover">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Thứ</th>
+                                <th class="text-center">Tiết</th>
+                                <th class="text-center">Giờ bắt đầu</th>
+                                <th class="text-center">Giờ kết thúc</th>
+                                <th class="text-center">Phòng</th>
+                                <th class="text-center" style="width: 100px">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            `);
+        }
+
+        // Edit schedule function
+        function editSchedule(scheduleId, dayOfWeek, slotId) {
+            $('#editScheduleId').val(scheduleId);
+            $('#editDayOfWeek').val(dayOfWeek);
+            $('#editSlotId').val(slotId);
+            editModal.show();
+        }
+
+        // Add schedule function
+        function addSchedule() {
+            const dayOfWeek = $('#addDayOfWeek').val();
+            const slotId = $('#addSlotId').val();
+
+            $.post('/TrainingOfficer/Schedules64132989/AddSchedule', {
+                offeringId: @Model.offering_id,
+                dayOfWeek: dayOfWeek,
+                slotId: slotId
+            })
+            .done(function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    addModal.hide();
+                    loadSchedules();
+                } else {
+                    showToast('error', response.message);
+                }
+            })
+            .fail(function() {
+                showToast('error', 'Đã xảy ra lỗi khi thêm lịch học');
+            });
+        }
+
+        // Update schedule function
+        function updateSchedule() {
+            const scheduleId = $('#editScheduleId').val();
+            const dayOfWeek = $('#editDayOfWeek').val();
+            const slotId = $('#editSlotId').val();
+
+            $.post('/TrainingOfficer/Schedules64132989/UpdateSchedule', {
+                scheduleId: scheduleId,
+                dayOfWeek: dayOfWeek,
+                slotId: slotId
+            })
+            .done(function(response) {
+                if (response.success) {
+                    showToast('success', response.message);
+                    editModal.hide();
+                    loadSchedules();
+                } else {
+                    showToast('error', response.message);
+                }
+            })
+            .fail(function() {
+                showToast('error', 'Đã xảy ra lỗi khi cập nhật lịch học');
+            });
+        }
+
+        // Delete schedule function
+        function deleteSchedule(scheduleId) {
+            if (confirm('Bạn có chắc chắn muốn xóa lịch học này?')) {
+                $.post('/TrainingOfficer/Schedules64132989/DeleteSchedule', {
+                    scheduleId: scheduleId
+                })
+                .done(function(response) {
+                    if (response.success) {
+                        showToast('success', response.message);
+                        loadSchedules();
+                    } else {
+                        showToast('error', response.message);
+                    }
+                })
+                .fail(function() {
+                    showToast('error', 'Đã xảy ra lỗi khi xóa lịch học');
+                });
+            }
+        }
+
+        // Auto schedule function
+        function autoSchedule(offeringId, credits) {
+            if (confirm('Bạn có chắc chắn muốn tự động xếp lịch cho lớp học phần này?')) {
+                $.post('/TrainingOfficer/Schedules64132989/AutoSchedule', {
+                    offeringId: offeringId,
+                    credits: credits
+                })
+                .done(function(response) {
+                    if (response.success) {
+                        showToast('success', response.message);
+                        loadSchedules();
+                    } else {
+                        showToast('error', response.message);
+                    }
+                })
+                .fail(function() {
+                    showToast('error', 'Đã xảy ra lỗi khi tự động xếp lịch');
+                });
+            }
+        }
+    </script>
+}

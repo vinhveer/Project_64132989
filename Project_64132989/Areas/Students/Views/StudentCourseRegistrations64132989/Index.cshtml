@@ -1,52 +1,287 @@
-﻿@model IEnumerable<Project_64132989.Models.Data.StudentCourseRegistration>
-
-@{
-    ViewBag.Title = "Index";
+﻿@{
+    ViewBag.Title = "Đăng ký học phần";
     Layout = "~/Areas/Students/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+@section Styles {
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <style>
+        .loading {
+            display: none;
+        }
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.CourseOffering.course_id)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Student.program_id)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.registration_date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.status)
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.CourseOffering.course_id)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Student.program_id)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.registration_date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.status)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.registration_id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.registration_id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.registration_id })
-        </td>
-    </tr>
+            .loading.active {
+                display: inline-block;
+                width: 1rem;
+                height: 1rem;
+                margin-left: 0.5rem;
+            }
+    </style>
 }
 
+<h3 class="mb-4">Đăng ký học phần</h3>
+
+<h5 class="mb-4">Danh sách học phần trong KHHT học kỳ hiện tại</h5>
+<table id="plannedCoursesTable" class="table align-middle w-100">
+    <thead>
+        <tr>
+            <th>Mã học phần</th>
+            <th>Tên học phần</th>
+            <th>Số tín chỉ</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
 </table>
+
+<hr />
+<h5 class="mb-4 mt-4">Danh sách lớp học phần đã đăng ký</h5>
+
+<table id="registeredCoursesTable" class="table align-middle w-100">
+    <thead>
+        <tr>
+            <th>Nhóm học phần</th>
+            <th>Mã học phần</th>
+            <th>Tên học phần</th>
+            <th>Giảng viên</th>
+            <th>Phòng học</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+</table>
+
+
+<!-- Modal Chọn lớp học phần -->
+<div class="modal fade" id="offeringsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chọn lớp học phần</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table id="offeringsTable" class="table align-middle w-100">
+                    <thead>
+                        <tr>
+                            <th>Nhóm</th>
+                            <th>Giảng viên</th>
+                            <th>Phòng</th>
+                            <th>Sĩ số</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xem thời khóa biểu -->
+<div class="modal fade" id="scheduleModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thời khóa biểu lớp học phần</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="scheduleDetails"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            const CURRENT_TIME = new Date('2025-01-01T17:39:17Z');
+            const CURRENT_USER = 'trittntu';
+
+            // Khởi tạo DataTable cho học phần trong KHHT
+            var plannedTable = $('#plannedCoursesTable').DataTable({
+                ajax: {
+                    url: '@Url.Action("GetPlannedCoursesCurrentSemester")',
+                    dataSrc: 'data'
+                },
+                columns: [
+                    { data: 'course_id' },
+                    { data: 'course_name' },
+                    { data: 'credits' },
+                    {
+                        data: null,
+                        render: function (data) {
+                            let btnClass = data.is_registered ? 'btn-success disabled' : 'custom-btn';
+                            let btnText = data.is_registered ? 'Lớp đã đăng ký' : 'Chọn lớp';
+                            return `<button class="btn ${btnClass} btn-sm" onclick="showOfferings('${data.course_id}')">
+                                     ${btnText}
+                                   </button>`;
+                        }
+                    }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json'
+                }
+            });
+
+            // Khởi tạo DataTable cho lớp đã đăng ký
+            var registeredTable = $('#registeredCoursesTable').DataTable({
+                ajax: {
+                    url: '@Url.Action("GetRegisteredCourses")',
+                    dataSrc: 'data'
+                },
+                columns: [
+                    { data: 'offering_id' },
+                    { data: 'course_id' },
+                    { data: 'course_name' },
+                    { data: 'teacher_name' },
+                    { data: 'room_name' },
+                    {
+                        data: null,
+                        render: function (data) {
+                            return `<div class="btn-group">
+                                     <button class="btn btn-danger btn-sm" onclick="unenrollCourse(${data.registration_id})">
+                                       Hủy đăng ký
+                                     </button>
+                                     <button class="btn btn-info btn-sm ms-1" onclick="viewSchedule(${data.offering_id})">
+                                       Xem lịch
+                                     </button>
+                                   </div>`;
+                        }
+                    }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json'
+                }
+            });
+
+            // Khởi tạo DataTable cho modal chọn lớp
+            var offeringsTable = $('#offeringsTable').DataTable({
+                columns: [
+                    { data: 'offering_id' },
+                    { data: 'teacher_name' },
+                    { data: 'room_name' },
+                    {
+                        data: null,
+                        render: function (data) {
+                            return `${data.current_enrollment}/${data.max_capacity}`;
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function (data) {
+                            let disabled = data.current_enrollment >= data.max_capacity ? 'disabled' : '';
+                            return `<div class="btn-group">
+                                     <button class="btn btn-success btn-sm ${disabled}" onclick="enrollCourse(${data.offering_id})">
+                                       Đăng ký
+                                     </button>
+                                     <button class="btn btn-info btn-sm ms-1" onclick="viewSchedule(${data.offering_id})">
+                                       Xem lịch
+                                     </button>
+                                   </div>`;
+                        }
+                    }
+                ],
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json'
+                }
+            });
+
+            // Hiển thị modal chọn lớp
+            window.showOfferings = function(courseId) {
+                $.get('@Url.Action("GetCourseOfferings")', { courseId: courseId })
+                    .done(function(response) {
+                        if (response.success) {
+                            offeringsTable.clear().rows.add(response.data).draw();
+                            $('#offeringsModal').modal('show');
+                        } else {
+                            alert(response.message);
+                        }
+                    })
+                    .fail(function() {
+                        alert('Có lỗi xảy ra khi tải danh sách lớp học phần');
+                    });
+            }
+
+            // Đăng ký lớp học phần
+            window.enrollCourse = function(offeringId) {
+                if (confirm('Xác nhận đăng ký lớp học phần này? Nếu đăng ký lớp mới, hãy huỷ lớp cũ trước!')) {
+                    $.post('@Url.Action("EnrollCourse")', { offeringId: offeringId })
+                        .done(function(response) {
+                            if (response.success) {
+                                alert(response.message || 'Đăng ký thành công!');
+                                $('#offeringsModal').modal('hide');
+                                refreshTables();
+                            } else {
+                                alert(response.message);
+                            }
+                        })
+                        .fail(function() {
+                            alert('Có lỗi xảy ra khi đăng ký lớp học phần');
+                        });
+                }
+            }
+
+            // Hủy đăng ký
+            window.unenrollCourse = function(registrationId) {
+                if (confirm('Xác nhận hủy đăng ký lớp học phần này?')) {
+                    $.post('@Url.Action("UnenrollCourse")', { registrationId: registrationId })
+                        .done(function(response) {
+                            if (response.success) {
+                                alert('Hủy đăng ký thành công!');
+                                refreshTables();
+                            } else {
+                                alert(response.message);
+                            }
+                        })
+                        .fail(function() {
+                            alert('Có lỗi xảy ra khi hủy đăng ký');
+                        });
+                }
+            }
+
+            // Xem lịch học
+            window.viewSchedule = function(offeringId) {
+                $.get('@Url.Action("GetCourseSchedule")', { offeringId: offeringId })
+                    .done(function(response) {
+                        if (response.success) {
+                            let scheduleHtml = formatScheduleHtml(response.data);
+                            $('#scheduleDetails').html(scheduleHtml);
+                            $('#scheduleModal').modal('show');
+                        } else {
+                            alert(response.message);
+                        }
+                    })
+                    .fail(function() {
+                        alert('Có lỗi xảy ra khi tải lịch học');
+                    });
+            }
+
+            // Hàm hỗ trợ
+            function refreshTables() {
+                plannedTable.ajax.reload();
+                registeredTable.ajax.reload();
+            }
+
+            function formatScheduleHtml(schedules) {
+                if (!schedules || schedules.length === 0) {
+                    return '<p>Chưa có lịch học</p>';
+                }
+
+                let html = '<table class="table">';
+                html += '<thead><tr><th>Ngày trong tuần</th><th>Thời gian học</th></tr></thead><tbody>';
+
+                schedules.forEach(schedule => {
+                    html += `<tr>
+                              <td>Thứ ${schedule.day_of_week}</td>
+                              <td>${schedule.start_time} - ${schedule.end_time}</td>
+                            </tr>`;
+                });
+
+                html += '</tbody></table>';
+                return html;
+            }
+        });
+    </script>
+}

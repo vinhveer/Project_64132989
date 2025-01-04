@@ -1,12 +1,8 @@
-﻿using OfficeOpenXml; // Sử dụng EPPlus 4.x hoặc ClosedXML
-using OfficeOpenXml.Style;
+﻿using OfficeOpenXml;
 using Project_64132989.Areas.Admin.Data;
 using Project_64132989.Models.Data;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -163,12 +159,14 @@ namespace Project_64132989.Areas.Admin.Controllers
                     return Json(new { success = false, message = "Không tìm thấy sinh viên" });
                 }
 
+                if (user.Student != null)
+                    _context.Students.Remove(user.Student);
+
                 if (user.Profile != null)
-                {
-                    if (user.Student != null)
-                        _context.Students.Remove(user.Student);
                     _context.Profiles.Remove(user.Profile);
-                }
+
+                if (user != null)
+                    _context.Users.Remove(user);
 
                 _context.Users.Remove(user);
                 _context.SaveChanges();
@@ -209,9 +207,16 @@ namespace Project_64132989.Areas.Admin.Controllers
                 foreach (var user in usersToDelete.Where(u => u.Profile != null))
                 {
                     if (user.Student != null)
+                    {
                         _context.Students.Remove(user.Student);
+                    }    
+                    
+                    if (user.Profile != null)
+                    {
+                        _context.Profiles.Remove(user.Profile);
+                    }
 
-                    _context.Profiles.Remove(user.Profile);
+                    _context.Users.Remove(user);
                 }
 
                 // Remove users
@@ -481,7 +486,7 @@ namespace Project_64132989.Areas.Admin.Controllers
             };
 
             ViewBag.user_id = new SelectList(_context.Users, "user_id", "email", profile.user_id);
-          
+
             return View(addNewUserModel);
         }
 

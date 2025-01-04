@@ -135,42 +135,21 @@
                     <div class="offcanvas-body d-md-flex flex-column p-0 overflow-y-auto">
                         <ul class="nav flex-column" style="margin-top: 60px">
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Student64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "Student64132989")" title="Trang quản lý sinh viên">
-                                    <i class="bi bi-person fs-5"></i>
-                                    Trang chủ
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Teacher64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "Teacher64132989")" title="Trang quản lý giảng viên">
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Schedules64132989" ? "active" : "")"
+                                   href="@Url.Action("Index", "Schedules64132989")" title="Trang quản lý giảng viên">
                                     <i class="bi bi-person-badge fs-5"></i>
                                     Thời khoá biểu
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "TrainingOfficer64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "CourseOfferings64132989")" title="Trang quản lý nhân viên">
-                                    <i class="bi bi-briefcase fs-5"></i>
-                                    Học phần của tôi
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "TrainingOfficer64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "CourseOfferings64132989")" title="Trang quản lý nhân viên">
-                                    <i class="bi bi-briefcase fs-5"></i>
-                                    Bảng điểm
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "admin64132989" ? "active" : "")"
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "StudentLearningPlans64132989" ? "active" : "")"
                                    href="@Url.Action("Index", "StudentLearningPlans64132989")" title="Trang quản lý quản trị viên">
                                     <i class="bi bi-briefcase fs-5"></i>
                                     Kế hoạch học tập
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Departments64132989" ? "active" : "")"
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "StudentCourseRegistrations64132989" ? "active" : "")"
                                    href="@Url.Action("Index", "StudentCourseRegistrations64132989")" title="Trang quản lý nhân viên">
                                     <i class="bi bi-building fs-5"></i>
                                     Đăng ký học phần

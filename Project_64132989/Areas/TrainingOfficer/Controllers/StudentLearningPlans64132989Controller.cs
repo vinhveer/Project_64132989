@@ -10,6 +10,7 @@ using System.Web.Mvc;
 
 namespace Project_64132989.Areas.TrainingOfficer.Controllers
 {
+    [Authorize(Roles = "TrainingOfficer")]
     public class StudentLearningPlans64132989Controller : Controller
     {
         private Model64132989DbContext db = new Model64132989DbContext();

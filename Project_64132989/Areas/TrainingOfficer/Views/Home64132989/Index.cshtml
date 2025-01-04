@@ -1,8 +1,271 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Index";
     Layout = "~/Areas/TrainingOfficer/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index</h2>
+<h5 class="mb-1">Xin chào</h5>
+<h3 class="mb-4">@Session["UserFullName"]</h3>
 
+
+<div class="row g-4 mb-4">
+    <!-- Course Offerings Card -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-book text-primary" style="font-size: 2rem;"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h3 class="h4 mb-0 text-primary fw-bold" id="courseOfferings">0</h3>
+                        <p class="text-muted mb-0">Nhóm học phần</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Card -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-journals text-success" style="font-size: 2rem;"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h3 class="h4 mb-0 text-success fw-bold" id="courses">0</h3>
+                        <p class="text-muted mb-0">Học phần</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Programs Card -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-diagram-3 text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h3 class="h4 mb-0 text-warning fw-bold" id="programs">0</h3>
+                        <p class="text-muted mb-0">Chương trình đào tạo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Classes Card -->
+    <div class="col-md-3">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-people text-info" style="font-size: 2rem;"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h3 class="h4 mb-0 text-info fw-bold" id="adminClasses">0</h3>
+                        <p class="text-muted mb-0">Lớp hành chính</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="row">
+    <!-- Department Courses Chart -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div id="departmentCoursesChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Planned Courses Chart -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div id="plannedCoursesChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Teachers Chart -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div id="teachersChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Program Students Chart -->
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div id="programStudentsChart"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Load Google Charts -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        // Load Google Charts and set callback
+        google.charts.load('current', { 'packages': ['corechart', 'bar'] });
+        google.charts.setOnLoadCallback(drawAllCharts);
+
+        function drawAllCharts() {
+            loadBasicStatistics();
+            loadDepartmentCoursesChart();
+            loadPlannedCoursesChart();
+            loadTeachersChart();
+            loadProgramStudentsChart();
+        }
+
+        // Load basic statistics
+        function loadBasicStatistics() {
+            fetch('/TrainingOfficer/Home64132989/GetBasicStatistics')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('courseOfferings').textContent = data.datasets[0].data[0];
+                    document.getElementById('courses').textContent = data.datasets[0].data[1];
+                    document.getElementById('programs').textContent = data.datasets[0].data[2];
+                    document.getElementById('adminClasses').textContent = data.datasets[0].data[3];
+                });
+        }
+
+        // Department Courses Chart
+        function loadDepartmentCoursesChart() {
+            fetch('/TrainingOfficer/Home64132989/GetDepartmentCourses')
+                .then(response => response.json())
+                .then(data => {
+                    const chartData = new google.visualization.DataTable();
+                    chartData.addColumn('string', 'Department');
+                    chartData.addColumn('number', 'Courses');
+
+                    // Convert Chart.js data format to Google Charts format
+                    const rows = data.labels.map((label, index) => [
+                        label,
+                        data.datasets[0].data[index]
+                    ]);
+                    chartData.addRows(rows);
+
+                    const options = {
+                        title: 'Số lượng khoá học theo phòng ban',
+                        titleTextStyle: { fontSize: 16 },
+                        height: 400,
+                        bar: { groupWidth: '70%' },
+                        legend: { position: 'none' }
+                    };
+
+                    const chart = new google.visualization.ColumnChart(
+                        document.getElementById('departmentCoursesChart')
+                    );
+                    chart.draw(chartData, options);
+                });
+        }
+
+        // Planned Courses Chart
+        function loadPlannedCoursesChart() {
+            fetch('/TrainingOfficer/Home64132989/GetPlannedCourses')
+                .then(response => response.json())
+                .then(data => {
+                    const chartData = new google.visualization.DataTable();
+                    chartData.addColumn('string', 'Course');
+                    chartData.addColumn('number', 'Count');
+
+                    const rows = data.labels.map((label, index) => [
+                        label,
+                        data.datasets[0].data[index]
+                    ]);
+                    chartData.addRows(rows);
+
+                    const options = {
+                        title: 'Top 10 khoá học được lên KHHT nhiều nhất',
+                        titleTextStyle: { fontSize: 16 },
+                        height: 400,
+                        bars: 'horizontal',
+                        legend: { position: 'none' }
+                    };
+
+                    const chart = new google.visualization.BarChart(
+                        document.getElementById('plannedCoursesChart')
+                    );
+                    chart.draw(chartData, options);
+                });
+        }
+
+        // Teachers Chart
+        function loadTeachersChart() {
+            fetch('/TrainingOfficer/Home64132989/GetTeachersPerDepartment')
+                .then(response => response.json())
+                .then(data => {
+                    const chartData = new google.visualization.DataTable();
+                    chartData.addColumn('string', 'Department');
+                    chartData.addColumn('number', 'Teachers');
+
+                    const rows = data.labels.map((label, index) => [
+                        label,
+                        data.datasets[0].data[index]
+                    ]);
+                    chartData.addRows(rows);
+
+                    const options = {
+                        title: 'Thống kê giáo viên theo phòng ban',
+                        titleTextStyle: { fontSize: 16 },
+                        height: 400,
+                        pieHole: 0
+                    };
+
+                    const chart = new google.visualization.PieChart(
+                        document.getElementById('teachersChart')
+                    );
+                    chart.draw(chartData, options);
+                });
+        }
+
+        // Program Students Chart
+        function loadProgramStudentsChart() {
+            fetch('/TrainingOfficer/Home64132989/GetProgramStudents')
+                .then(response => response.json())
+                .then(data => {
+                    const chartData = new google.visualization.DataTable();
+                    chartData.addColumn('string', 'Program');
+                    chartData.addColumn('number', 'Students');
+
+                    const rows = data.labels.map((label, index) => [
+                        label,
+                        data.datasets[0].data[index]
+                    ]);
+                    chartData.addRows(rows);
+
+                    const options = {
+                        title: 'Thống kê sinh viên theo chương trình đào tạo',
+                        titleTextStyle: { fontSize: 16 },
+                        height: 400,
+                        pieHole: 0.4
+                    };
+
+                    const chart = new google.visualization.PieChart(
+                        document.getElementById('programStudentsChart')
+                    );
+                    chart.draw(chartData, options);
+                });
+        }
+
+        // Handle responsive charts
+        window.addEventListener('resize', function () {
+            drawAllCharts();
+        });
+    </script>
+}

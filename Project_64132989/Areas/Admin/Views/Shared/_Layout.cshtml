@@ -14,6 +14,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <link href="~/Assets/dashboard.css" rel="stylesheet">
+    <style>
+        form {
+            width: 75%;
+        }
+    </style>
 </head>
 
 <body>
@@ -134,29 +139,36 @@
                     <div class="offcanvas-body d-md-flex flex-column p-0 overflow-y-auto">
                         <ul class="nav flex-column" style="margin-top: 60px">
                             <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Home64132989" ? "active" : "")"
+                                   href="@Url.Action("Index", "Home64132989")">
+                                    <i class="bi bi-house fs-5"></i>
+                                    Trang chủ
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Student64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "Student64132989")" title="Trang quản lý sinh viên">
+                                   href="@Url.Action("Index", "Student64132989")">
                                     <i class="bi bi-person fs-5"></i>
                                     Sinh viên
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "Teacher64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "Teacher64132989")" title="Trang quản lý giảng viên">
+                                   href="@Url.Action("Index", "Teacher64132989")">
                                     <i class="bi bi-person-badge fs-5"></i>
                                     Giảng viên
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "TrainingOfficer64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "TrainingOfficer64132989")" title="Trang quản lý nhân viên">
+                                   href="@Url.Action("Index", "TrainingOfficer64132989")">
                                     <i class="bi bi-briefcase fs-5"></i>
                                     Nhân viên phòng đào tạo
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link d-flex align-items-center gap-3 @(ViewContext.RouteData.Values["controller"].ToString() == "admin64132989" ? "active" : "")"
-                                   href="@Url.Action("Index", "admin64132989")" title="Trang quản lý quản trị viên">
+                                   href="@Url.Action("Index", "Admin64132989")">
                                     <i class="bi bi-briefcase fs-5"></i>
                                     Quản trị viên
                                 </a>
@@ -173,7 +185,7 @@
                 </div>
             </div>
 
-            <main class="px-md-4 mt-2">
+            <main class="px-md-4 mt-5">
                 @RenderBody()
                 <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 border-top mt-4">
                     <div class="col-md-4 d-flex align-items-center">

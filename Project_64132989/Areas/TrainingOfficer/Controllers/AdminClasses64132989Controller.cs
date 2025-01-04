@@ -11,6 +11,7 @@ using Project_64132989.Models.Data;
 
 namespace Project_64132989.Areas.TrainingOfficer.Controllers
 {
+    [Authorize(Roles = "TrainingOfficer")]
     public class AdminClasses64132989Controller : Controller
     {
         private Model64132989DbContext db = new Model64132989DbContext();

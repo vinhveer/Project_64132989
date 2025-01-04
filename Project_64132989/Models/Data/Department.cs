@@ -5,6 +5,7 @@ namespace Project_64132989.Models.Data
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
+    using System.ComponentModel;
 
     public partial class Department
     {
@@ -19,14 +20,19 @@ namespace Project_64132989.Models.Data
 
         [Key]
         [StringLength(10)]
+        [Required(ErrorMessage = "Mã khoa không được để trống")]
+        [DisplayName("Mã khoa")]
         public string department_id { get; set; }
 
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "Tên khoa không được để trống")]
+        [DisplayName("Tên khoa")]
         public string department_name { get; set; }
 
+        [DataType(DataType.MultilineText)]
+        [DisplayName("Mô tả")]
         public string description { get; set; }
 
+        [DisplayName("Trạng thái")]
         public byte? status { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

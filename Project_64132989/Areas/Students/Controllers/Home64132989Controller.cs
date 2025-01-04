@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace Project_64132989.Areas.Students.Controllers
 {
+    [Authorize(Roles = "Student")]
     public class Home64132989Controller : Controller
     {
         // GET: Students/Home64132989

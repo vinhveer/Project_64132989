@@ -9,6 +9,11 @@ body {
     font-size: 0.875rem !important;
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 .custom-btn {
     font-size: 0.875rem;
     border: 1px solid rgba(27, 31, 35, 0.15);
